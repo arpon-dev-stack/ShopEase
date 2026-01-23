@@ -1,8 +1,11 @@
-import React from 'react';
+import {memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, ShoppingBag } from 'lucide-react';
+import { addToCart } from '../slices/cartSlice';
+import { useDispatch } from 'react-redux';
 
-const ProductCard = ({ product, onAddToCart }) => {
+const ProductCard = memo(({ product}) => {
+  const dispatch = useDispatch()
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 grid grid-row-5 grid-cols-1">
       {/* Product Image */}
@@ -10,7 +13,7 @@ const ProductCard = ({ product, onAddToCart }) => {
         <img
           src={product.image}
           alt={product.name}
-          className="w-full h-full object-cover hover:scale-105 transition-transform duration-300"
+          className="w-full h-full object-cover hover:scale-[1.001] transition-transform duration-300"
         />
         <span className="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded">
           {product.category}
@@ -62,7 +65,7 @@ const ProductCard = ({ product, onAddToCart }) => {
               View
             </Link>
             <button
-              onClick={() => onAddToCart(product)}
+              onClick={() => {dispatch(addToCart(product))}}
               className="btn-primary text-sm px-3 py-2 flex items-center"
             >
               <ShoppingBag className="w-4 h-4 mr-1" />
@@ -73,6 +76,6 @@ const ProductCard = ({ product, onAddToCart }) => {
       </div>
     </div>
   );
-};
+})
 
 export default ProductCard;

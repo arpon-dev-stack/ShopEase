@@ -1,10 +1,14 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { ShoppingCart, Search, Menu, X } from 'lucide-react';
+import { useSelector } from 'react-redux';
+import { selectCartTotals } from '../features/cart/cartSelectors';
 
-const Header = ({ cartCount }) => {
+const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const cart = useSelector(state => state.cart);
+  const {itemCount} = useSelector(selectCartTotals)
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50">
@@ -31,16 +35,16 @@ const Header = ({ cartCount }) => {
 
           {/* Navigation Links - Desktop */}
           <nav className="hidden md:flex items-center space-x-6">
-            <NavLink to="/" className={({isActive}) => `text-gray-700 hover:text-primary transition ${isActive ? 'text-primary' : 'text-black'}`}>
+            <NavLink to="/" className={({ isActive }) => `text-gray-700 hover:text-primary transition ${isActive ? 'text-primary' : 'text-black'}`}>
               Home
             </NavLink>
-            <NavLink to="/products" className={({isActive}) => `text-gray-700 hover:text-primary transition ${isActive ? 'text-primary' : 'text-black'}`}>
+            <NavLink to="/products" className={({ isActive }) => `text-gray-700 hover:text-primary transition ${isActive ? 'text-primary' : 'text-black'}`}>
               Products
             </NavLink>
-            <NavLink to="/categories" className={({isActive}) => `text-gray-700 hover:text-primary transition ${isActive ? 'text-primary' : 'text-black'}`}>
+            <NavLink to="/categories" className={({ isActive }) => `text-gray-700 hover:text-primary transition ${isActive ? 'text-primary' : 'text-black'}`}>
               Categories
             </NavLink>
-            <NavLink to="/deals" className={({isActive}) => `text-gray-700 hover:text-primary transition ${isActive ? 'text-primary' : 'text-black'}`}>
+            <NavLink to="/deals" className={({ isActive }) => `text-gray-700 hover:text-primary transition ${isActive ? 'text-primary' : 'text-black'}`}>
               Deals
             </NavLink>
           </nav>
@@ -49,17 +53,17 @@ const Header = ({ cartCount }) => {
           <div className="flex items-center space-x-5">
             <Link to="/cart" className="relative">
               <ShoppingCart className="sm:w-6 w-9 h-9  sm:h-6 text-gray-700 hover:text-primary transition" />
-              {cartCount > 0 && (
+              {itemCount > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {cartCount}
+                  {itemCount > 9 ? "9+" : itemCount}
                 </span>
               )}
             </Link>
-            
+
             <button className="btn-primary hidden md:block">
               Sign In
             </button>
-            
+
             {/* Mobile Menu Button */}
             <button
               className="md:hidden"

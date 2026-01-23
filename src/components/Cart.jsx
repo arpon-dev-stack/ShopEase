@@ -1,12 +1,19 @@
 import React from 'react';
+import { incrementQuantity, decrementQuantity, removeFromCart } from '../slices/cartSlice';
+import { useDispatch, useSelector } from 'react-redux';
 import { Trash2, Plus, Minus } from 'lucide-react';
+import { selectCartTotals } from '../features/cart/cartSelectors';
 
-const Cart = ({ cartItems, onRemoveItem, onUpdateQuantity }) => {
+const Cart = () => {
+  const dispatch = useDispatch();
+  const cartItems = useSelector(state => state.cart);
+  const {shipping} = useSelector(selectCartTotals);
+
   const calculateTotal = () => {
-    return cartItems.reduce((total, item) => total + item.price * item.quantity, 0);
+    return cartItems.items.reduce((total, item) => total + item.price * item.quantity, 0);
   };
 
-  if (cartItems.length === 0) {
+  if (cartItems.items.length === 0) {
     return (
       <div className="text-center py-12">
         <div className="text-gray-400 mb-4">
@@ -25,11 +32,11 @@ const Cart = ({ cartItems, onRemoveItem, onUpdateQuantity }) => {
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Shopping Cart</h2>
       
       {/* Cart Items */}
-      <div className="space-y-4">
-        {cartItems.map((item) => (
-          <div key={item.id} className="flex items-center border-b pb-4">
+      <div className="grid grid-cols-4 grid-flow-row">
+        {cartItems.items.map((item) => (
+          <div key={item.id} className="col-span-4 grid grid-cols-subgrid items-center border-b h-40">
             {/* Product Image */}
-            <div className="w-20 h-20 mr-4">
+            <div className="h-36 col-span-1 flex justify-start items-center">
               <img
                 src={item.image}
                 alt={item.name}
@@ -38,42 +45,42 @@ const Cart = ({ cartItems, onRemoveItem, onUpdateQuantity }) => {
             </div>
             
             {/* Product Info */}
-            <div className="flex-1">
+            <div className="flex-1 col-span-1 self-start p-2">
               <h3 className="font-semibold text-gray-800">{item.name}</h3>
               <p className="text-gray-600 text-sm">{item.category}</p>
               <p className="text-primary font-bold">${item.price}</p>
             </div>
             
             {/* Quantity Controls */}
-            <div className="flex items-center space-x-3 mr-6">
+            <div className="flex sm:flex-row flex-col items-center justify-end col-span-1 gap-x-2">
               <button
-                onClick={() => onUpdateQuantity(item.id, item.quantity - 1)}
-                className="p-1 rounded-full hover:bg-gray-100"
+                onClick={() => {console.log("decrement"); dispatch(decrementQuantity(item))}}
+                className="p-1 rounded-full hover:bg-gray-200  bg-gray-100"
                 disabled={item.quantity <= 1}
               >
-                <Minus className="w-4 h-4" />
+                <Minus className="w-11 h-11" />
               </button>
               
               <span className="w-8 text-center font-medium">{item.quantity}</span>
               
               <button
-                onClick={() => onUpdateQuantity(item.id, item.quantity + 1)}
-                className="p-1 rounded-full hover:bg-gray-100"
+                onClick={() => {console.log("increment"); dispatch(incrementQuantity(item))}}
+                className="p-1 rounded-full hover:bg-gray-200 bg-gray-100"
               >
-                <Plus className="w-4 h-4" />
+                <Plus className="w-11 h-11" />
               </button>
             </div>
             
             {/* Total and Remove */}
-            <div className="text-right">
+            <div className="text-right col-span-1 flex flex-col justify-center items-center">
               <p className="font-bold text-gray-800 mb-2">
                 ${(item.price * item.quantity).toFixed(2)}
               </p>
               <button
-                onClick={() => onRemoveItem(item.id)}
+                onClick={() => {console.log("remove"); dispatch(removeFromCart(item))}}
                 className="text-red-500 hover:text-red-700"
               >
-                <Trash2 className="w-5 h-5" />
+                <Trash2 className="w-7 h-7" />
               </button>
             </div>
           </div>
@@ -88,7 +95,7 @@ const Cart = ({ cartItems, onRemoveItem, onUpdateQuantity }) => {
         </div>
         <div className="flex justify-between items-center mb-4">
           <span className="text-gray-600">Shipping</span>
-          <span className="font-bold">$5.99</span>
+          <span className="font-bold">${shipping}</span>
         </div>
         <div className="flex justify-between items-center text-lg font-bold mb-6">
           <span>Total</span>
