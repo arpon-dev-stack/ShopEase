@@ -1,63 +1,81 @@
+import mixer from './assets/mixer.webp'
+import earbud from './assets/earbud.webp'
+import earmuff from './assets/earmuff.webp'
+import headphone from './assets/headphone.webp'
+import jacket from './assets/jacket.webp'
+import womenJacket from './assets/womenjacket.webp'
+import shoes from './assets/shoes.webp'
+import watch from './assets/watch.webp'
+import gameconsole from './assets/gameconsole.webp'
+import travellbag from './assets/travellbag.webp'
+
 export const products = [
   {
     id: 1,
-    name: "Wireless Bluetooth Headphones",
+    name: "PlayStation 5 Game Console",
     price: 89.99,
-    image: "https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=400",
+    image: gameconsole,
     category: "Electronics",
-    description: "High-quality wireless headphones with noise cancellation",
+    description: "New featured wareless controllers",
     rating: 4.5,
-    reviews: 128
+    reviews: 128,
+    isShow: true
   },
   {
     id: 2,
     name: "Running Shoes",
     price: 129.99,
-    image: "https://images.unsplash.com/photo-1542291026-7eec264c27ff?w-400",
+    image: shoes,
     category: "Fashion",
     description: "Comfortable running shoes for all terrains",
     rating: 4.7,
+    isShow: true,
     reviews: 256
   },
   {
     id: 3,
     name: "Smart Watch",
     price: 249.99,
-    image: "https://images.unsplash.com/photo-1523275335684-37898b6baf30?w=400",
+    image: watch,
     category: "Electronics",
     description: "Track your fitness and notifications",
     rating: 4.3,
-    reviews: 89
+    reviews: 89,
+    isShow: true
   },
   {
     id: 4,
     name: "Backpack",
     price: 59.99,
-    image: "https://images.unsplash.com/photo-1553062407-98eeb64c6a62?w=400",
+    image: travellbag,
     category: "Fashion",
     description: "Durable backpack for daily use",
     rating: 4.2,
-    reviews: 42
+    reviews: 42,
+    isShow: true
+
   },
   {
     id: 5,
-    name: "Coffee Maker",
+    name: "Kitchen Accessories",
     price: 79.99,
-    image: "https://images.unsplash.com/photo-1495474472287-4d71bcdd2085?w=400",
+    image: mixer,
     category: "Home",
-    description: "Automatic coffee maker with timer",
+    description: "Automatic Feature reach Kitchen maker with timer",
     rating: 4.6,
-    reviews: 156
+    reviews: 156,
+    isShow: true
   },
   {
     id: 6,
-    name: "Yoga Mat",
+    name: "Wonen Jacket",
     price: 34.99,
-    image: "https://images.unsplash.com/photo-1571900670434-7631e62d1b38?w=400",
-    category: "Sports",
+    image: womenJacket,
+    category: "Fashions",
     description: "Non-slip yoga mat with carrying strap",
     rating: 4.4,
-    reviews: 73
+    reviews: 73,
+    isShow: true
   }
 ];
 

@@ -1,8 +1,11 @@
-import React from 'react';
 import { Link } from 'react-router-dom';
 import Cart from '../components/Cart'
+import { useSelector} from 'react-redux';
+import { selectCartTotals } from '../features/cart/cartSelectors';
 
-const CartPage = ({ cartItems, onRemoveItem, onUpdateQuantity }) => {
+const CartPage = () => {
+  const {subtotal, tax, total, shipping} = useSelector(selectCartTotals)
+
   return (
     <div className="max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold mb-8">Your Shopping Cart</h1>
@@ -10,11 +13,7 @@ const CartPage = ({ cartItems, onRemoveItem, onUpdateQuantity }) => {
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Cart Items */}
         <div className="lg:w-2/3">
-          <Cart
-            cartItems={cartItems}
-            onRemoveItem={onRemoveItem}
-            onUpdateQuantity={onUpdateQuantity}
-          />
+          <Cart/>
         </div>
 
         {/* Order Summary - Sidebar */}
@@ -26,28 +25,24 @@ const CartPage = ({ cartItems, onRemoveItem, onUpdateQuantity }) => {
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>
                 <span className="font-medium">
-                  ${cartItems.reduce((total, item) => total + item.price * item.quantity, 0).toFixed(2)}
+                  {subtotal}
                 </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Shipping</span>
-                <span className="font-medium">$5.99</span>
+                <span className="font-medium">${shipping}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-gray-600">Tax</span>
                 <span className="font-medium">
-                  ${(cartItems.reduce((total, item) => total + item.price * item.quantity, 0) * 0.08).toFixed(2)}
+                  {tax}
                 </span>
               </div>
               <div className="border-t pt-4">
                 <div className="flex justify-between text-lg font-bold">
                   <span>Total</span>
                   <span>
-                    ${(
-                      cartItems.reduce((total, item) => total + item.price * item.quantity, 0) +
-                      5.99 +
-                      (cartItems.reduce((total, item) => total + item.price * item.quantity, 0) * 0.08)
-                    ).toFixed(2)}
+                    {total}
                   </span>
                 </div>
               </div>
