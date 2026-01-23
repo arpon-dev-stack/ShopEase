@@ -1,7 +1,7 @@
 import {memo } from 'react';
 import { Link } from 'react-router-dom';
 import { Star, ShoppingBag } from 'lucide-react';
-import { addToCart } from '../slices/cartSlice';
+import { addToCart } from '../features/cart/cartSlice';
 import { useDispatch } from 'react-redux';
 
 const ProductCard = memo(({ product}) => {

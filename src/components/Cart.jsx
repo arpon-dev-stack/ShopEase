@@ -1,5 +1,5 @@
 import React from 'react';
-import { incrementQuantity, decrementQuantity, removeFromCart } from '../slices/cartSlice';
+import { incrementQuantity, decrementQuantity, removeFromCart } from '../features/cart/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Trash2, Plus, Minus } from 'lucide-react';
 import { selectCartTotals } from '../features/cart/cartSelectors';

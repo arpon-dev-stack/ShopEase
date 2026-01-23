@@ -2,7 +2,7 @@ import React, { useDebugValue, useState } from 'react';
 import ProductCard from '../components/ProductCard';
 import { categories } from '../data';
 import { Link } from 'react-router-dom'
-import { filter } from '../slices/initialProduct'
+import { filter } from '../features/product/initialProduct'
 import { useSelector, useDispatch } from 'react-redux';
 import Hero from '../components/Hero';
 
