@@ -7,7 +7,7 @@ import { selectCartTotals } from '../features/cart/cartSelectors';
 const Cart = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector(state => state.cart);
-  const {shipping} = useSelector(selectCartTotals);
+  const { shipping } = useSelector(selectCartTotals);
 
   const calculateTotal = () => {
     return cartItems.items.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -28,65 +28,61 @@ const Cart = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md p-6">
+    <div className="bg-white rounded-lg shadow-md sm:p-6">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Shopping Cart</h2>
-      
+
       {/* Cart Items */}
-      <div className="grid grid-cols-4 grid-flow-row">
+      <div className="">
         {cartItems.items.map((item) => (
-          <div key={item.id} className="col-span-4 grid grid-cols-subgrid items-center border-b h-40">
+          <div key={item.id} className="border-b grid grid-cols-2">
             {/* Product Image */}
-            <div className="h-36 col-span-1 flex justify-start items-center">
+            <div className="flex justify-start gap-x-2">
               <img
                 src={item.image}
                 alt={item.name}
-                className="w-full h-full object-cover rounded"
+                className="w-20 h-20 object-cover rounded"
               />
+              <div className="">
+                <h3 className="font-semibold text-gray-800">{item.name}</h3>
+                <p className="text-gray-600 text-sm">{item.category}</p>
+                <p className="text-primary font-bold">${item.price}</p>
+              </div>
             </div>
-            
+
             {/* Product Info */}
-            <div className="flex-1 col-span-1 self-start p-2">
-              <h3 className="font-semibold text-gray-800">{item.name}</h3>
-              <p className="text-gray-600 text-sm">{item.category}</p>
-              <p className="text-primary font-bold">${item.price}</p>
-            </div>
-            
-            {/* Quantity Controls */}
-            <div className="flex sm:flex-row flex-col items-center justify-end col-span-1 gap-x-2">
-              <button
-                onClick={() => {console.log("decrement"); dispatch(decrementQuantity(item))}}
-                className="p-1 rounded-full hover:bg-gray-200  bg-gray-100"
-                disabled={item.quantity <= 1}
-              >
-                <Minus className="w-11 h-11" />
-              </button>
-              
-              <span className="w-8 text-center font-medium">{item.quantity}</span>
-              
-              <button
-                onClick={() => {console.log("increment"); dispatch(incrementQuantity(item))}}
-                className="p-1 rounded-full hover:bg-gray-200 bg-gray-100"
-              >
-                <Plus className="w-11 h-11" />
-              </button>
-            </div>
-            
-            {/* Total and Remove */}
-            <div className="text-right col-span-1 flex flex-col justify-center items-center">
-              <p className="font-bold text-gray-800 mb-2">
-                ${(item.price * item.quantity).toFixed(2)}
-              </p>
-              <button
-                onClick={() => {console.log("remove"); dispatch(removeFromCart(item))}}
-                className="text-red-500 hover:text-red-700"
-              >
-                <Trash2 className="w-7 h-7" />
-              </button>
+
+            <div className="flex justify-end p-2 gap-2">
+              <div className="flex items-center rounded-lg">
+                <button
+                  onClick={() => dispatch(decrementQuantity(item))}
+                  className="px-4 py-2 hover:bg-gray-100"
+                >
+                  -
+                </button>
+                <span className="px-4 py-2 w-12 text-center">{item.quantity}</span>
+                <button
+                  onClick={() => dispatch(incrementQuantity(item))}
+                  className="px-4 py-2 hover:bg-gray-100"
+                >
+                  +
+                </button>
+              </div>
+              <div className="text-right col-span-1 w-20 flex flex-col justify-center items-center">
+                <p className="font-bold text-gray-800 mb-2">
+                  ${(item.price * item.quantity).toFixed(2)}
+                </p>
+                <button
+                  onClick={() => { console.log("remove"); dispatch(removeFromCart(item)) }}
+                  className="text-red-500 hover:text-red-700"
+                >
+                  <Trash2 className="w-7 h-7" />
+                </button>
+              </div>
             </div>
           </div>
         ))}
       </div>
-      
+
       {/* Cart Summary */}
       <div className="mt-8 pt-6 border-t">
         <div className="flex justify-between items-center mb-4">
@@ -101,7 +97,7 @@ const Cart = () => {
           <span>Total</span>
           <span>${(calculateTotal() + 5.99).toFixed(2)}</span>
         </div>
-        
+
         <button className="btn-primary w-full py-3 text-lg">
           Proceed to Checkout
         </button>

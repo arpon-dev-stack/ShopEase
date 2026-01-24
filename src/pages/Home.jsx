@@ -1,38 +1,41 @@
-import React, { useDebugValue, useState } from 'react';
+import React, { useState } from 'react';
 import ProductCard from '../components/ProductCard';
-import { categories } from '../data';
 import { Link } from 'react-router-dom'
 import { filter } from '../features/product/initialProduct'
 import { useSelector, useDispatch } from 'react-redux';
 import Hero from '../components/Hero';
 
-const Home = ({ onAddToCart }) => {
-  const [selectedCategory, setSelectedCategory] = useState('All');
+const Home = () => {
   const dispatch = useDispatch();
   const initialProduct = useSelector(state => state.initialProduct);
   const cartCount = useSelector(state => state.cart)
+  const uniqueArray = ['All', ...new Set(initialProduct.map(product => product.category))];
+  const [selectCategory, setSelectCategory] = useState('All');
 
-  console.dir(cartCount)
+  const handleSelect = (param) => {
+    console.log(param)
+    setSelectCategory(param)
+  }
 
   return (
-    <div className="space-y-7">
+    <div className="">
       {/* Hero Section */}
       {/* <section className="bg-gradient-to-r from-primary to-secondary text-white rounded-2xl p-8 md:p-12"> */}
-      <Hero/>
+      <Hero />
       {/* Categories */}
-      <section>
+      <section className='mt-1'>
         <h2 className="text-3xl font-bold mb-6">Shop by Category</h2>
-        <div className="flex flex-wrap gap-3 mb-8">
-          {categories.map((category) => (
+        <div className="flex flex-wrap gap-3 mb-6">
+          {uniqueArray.map((product, key) => (
             <button
-              key={category}
-              onClick={() => { dispatch(filter(category)); setSelectedCategory(category) }}
-              className={`px-6 py-2 rounded-full transition ${selectedCategory === category
+              key={key}
+              onClick={() => { dispatch(filter(product)); handleSelect(product) }}
+              className={`px-6 py-2 rounded-full transition ${ product === selectCategory
                 ? 'bg-primary text-white'
                 : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                 }`}
             >
-              {category}
+              {product}
             </button>
           ))}
         </div>
@@ -46,7 +49,6 @@ const Home = ({ onAddToCart }) => {
             initialProduct.filter(product => product.isShow).map(product => <ProductCard
               key={product.id}
               product={product}
-              onAddToCart={onAddToCart}
             />)
           }
         </div>

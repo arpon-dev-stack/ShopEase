@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { ShoppingCart, Search, Menu, X } from 'lucide-react';
 import { useSelector } from 'react-redux';
@@ -8,10 +8,45 @@ const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const cart = useSelector(state => state.cart);
-  const {itemCount} = useSelector(selectCartTotals)
+  const { itemCount } = useSelector(selectCartTotals);
+  const signInDialogRef = useRef();
+  const signUpDialogRef = useRef();
+
+  console.log(itemCount)
+
+  const openSignInModal = () => {
+    closeSignUpModel()
+    signInDialogRef.current?.showModal();
+  };
+
+  const openSignUpModel = () => {
+    closeSignInModal();
+    signUpDialogRef.current?.showModal();
+  }
+
+  const closeSignInModal = () => {
+    signInDialogRef.current?.close();
+  };
+
+  const closeSignUpModel = () => {
+    signUpDialogRef.current?.close();
+  }
+
+  // Close if clicking the backdrop
+  const handleSignInBackdropClick = (e) => {
+    if (e.target === signInDialogRef.current) {
+      closeSignInModal();
+    }
+  };
+
+  const handleSignUpBackdropClick = (e) => {
+    if (e.target === signUpDialogRef.current) {
+      closeSignUpModel();
+    }
+  };
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50">
+    <header className="bg-white shadow-md sticky top-0 z-50 min-w-[280px]">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between gap-4 h-16">
           {/* Logo */}
@@ -29,7 +64,7 @@ const Header = () => {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
               />
-              <Search className="absolute right-3 top-2.5 text-gray-400 w-5 h-5" />
+              <Search className="absolute right-3 top-2.5 text-gray-400 w-5 h-5 hover:text-primary" />
             </div>
           </div>
 
@@ -60,7 +95,7 @@ const Header = () => {
               )}
             </Link>
 
-            <button className="btn-primary hidden md:block">
+            <button className="btn-primary hidden md:block" onClick={openSignInModal}>
               Sign In
             </button>
 
@@ -125,10 +160,55 @@ const Header = () => {
               >
                 Deals
               </Link>
-              <button className="btn-primary mt-4">Sign In</button>
+              <button className="btn-primary mt-4" onClick={openModal}>Sign In</button>
             </div>
           </div>
         )}
+        <dialog
+          ref={signInDialogRef}
+          onClick={handleSignInBackdropClick}
+          className="rounded-lg p-0 backdrop:backdrop-blur-[1px]"
+        >
+          <div className="p-8 w-80 bg-white">
+            <h2 className="text-xl font-bold mb-4">Sign In</h2>
+            <form className="flex flex-col gap-4">
+              <input type="email" placeholder="Email" className="border p-2 rounded ring-2 border-gray-300 focus:outline-none focus:ring-primary" />
+              <input type="password" placeholder="Password" className="border p-2 rounded focus:ring-primary ring-2 focus:outline-none border-gray-300" />
+              <button type="submit" className="btn-primary text-white p-2 rounded-lg">
+                Login
+              </button>
+              <button type="button" onClick={closeSignInModal} className="text-gray-500 hover:bg-gray-300 active:bg-gray-400 bg-gray-200 font-semibold p-2 rounded-lg text-sm">
+                Cancel
+              </button>
+              <span>Don't have Account</span>
+              <button type="button" onClick={openSignUpModel} className="text-black hover:bg-gray-300 active:bg-gray-400 bg-gray-200 font-semibold p-2 rounded-lg text-sm">
+                Sign Up
+              </button>
+            </form>
+          </div>
+        </dialog>
+        <dialog ref={signUpDialogRef} onClick={handleSignUpBackdropClick} className='rounded-lg'>
+          <div className="p-8 w-80 bg-white">
+            <h2 className="text-xl font-bold mb-4">Sign Up</h2>
+            <form className="flex flex-col gap-4">
+              <input type="email" placeholder="Full name" className="border p-2 rounded ring-2 border-gray-300 focus:outline-none focus:ring-primary" />
+              <input type="password" placeholder="Email" className="border p-2 rounded focus:ring-primary ring-2 focus:outline-none border-gray-300" />
+              <input type="email" placeholder="Password" className="border p-2 rounded ring-2 border-gray-300 focus:outline-none focus:ring-primary" />
+              <input type="password" placeholder="Conform Password" className="border p-2 rounded focus:ring-primary ring-2 focus:outline-none border-gray-300" />
+
+              <button type="submit" className="btn-primary text-white p-2 rounded-lg">
+                Login
+              </button>
+              <button type="button" onClick={closeSignUpModel} className="text-gray-500 hover:bg-gray-300 active:bg-gray-400 bg-gray-200 font-semibold p-2 rounded-lg text-sm">
+                Cancel
+              </button>
+              <span>Have Account</span>
+              <button type="button" onClick={openSignInModal} className="text-black hover:bg-gray-300 active:bg-gray-400 bg-gray-200 font-semibold p-2 rounded-lg text-sm">
+                Sign In
+              </button>
+            </form>
+          </div>
+        </dialog>
       </div>
     </header>
   );

@@ -14,6 +14,7 @@ const ProductCard = memo(({ product}) => {
           src={product.image}
           alt={product.name}
           className="w-full h-full object-cover hover:scale-[1.001] transition-transform duration-300"
+          loading='lazy'
         />
         <span className="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded">
           {product.category}

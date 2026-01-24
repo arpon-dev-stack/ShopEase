@@ -71,7 +71,7 @@ export const products = [
     name: "Wonen Jacket",
     price: 34.99,
     image: womenJacket,
-    category: "Fashions",
+    category: "Fashion",
     description: "Non-slip yoga mat with carrying strap",
     rating: 4.4,
     reviews: 73,

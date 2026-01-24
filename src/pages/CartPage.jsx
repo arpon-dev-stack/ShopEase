@@ -65,7 +65,7 @@ const CartPage = () => {
                 <input
                   type="text"
                   placeholder="Enter code"
-                  className="flex-1 px-4 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary"
+                  className="flex-1 px-4 min-w-0 py-2 border border-gray-300 rounded-l-lg focus:outline-none focus:ring-2 focus:ring-primary"
                 />
                 <button className="btn-secondary rounded-l-none">
                   Apply
@@ -76,11 +76,11 @@ const CartPage = () => {
             {/* Payment Methods */}
             <div className="mt-6">
               <h3 className="font-medium mb-3">We Accept</h3>
-              <div className="flex space-x-2">
+              <div className="grid sm:grid-cols-4 grid-cols-2 sm:grid-rows-1 lg:grid-cols-2 grid-rows-2 gap-2 grid-flow-row">
                 {['Visa', 'MasterCard', 'PayPal', 'Apple Pay'].map((method) => (
                   <div
                     key={method}
-                    className="flex-1 bg-gray-100 rounded-lg p-2 text-center text-sm"
+                    className="flex overflow-hidden justify-center items-center bg-gray-100 rounded-lg p-2 text-center text-sm h-12"
                   >
                     {method}
                   </div>

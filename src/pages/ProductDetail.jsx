@@ -2,14 +2,18 @@ import React, { useState } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Star, Truck, Shield, RefreshCw, ChevronLeft } from 'lucide-react';
 import { products } from '../data';
+import { useSelector, useDispatch } from 'react-redux';
+import { incrementQuantity, decrementQuantity, addToCart } from '../features/cart/cartSlice';
 
 const ProductDetail = ({ onAddToCart }) => {
   const { id } = useParams();
   const navigate = useNavigate();
   const [quantity, setQuantity] = useState(1);
   const [selectedImage, setSelectedImage] = useState(0);
+  const dispatch = useDispatch();
+  const cartProducts = useSelector(state => state.initialProduct)
 
-  const product = products.find(p => p.id === parseInt(id));
+  const product = cartProducts.find(p => p.id === parseInt(id));
 
   if (!product) {
     return (
@@ -108,8 +112,8 @@ const ProductDetail = ({ onAddToCart }) => {
             {/* Action Buttons */}
             <div className="flex space-x-4 mb-8">
               <button
-                onClick={() => onAddToCart({ ...product, quantity })}
-                className="btn-primary flex-1 py-3 text-lg"
+                onClick={() => dispatch(addToCart({...product, quantity}))}
+                className="btn-primary flex-1 py-3 text-lg" 
               >
                 Add to Cart
               </button>
@@ -162,7 +166,7 @@ const ProductDetail = ({ onAddToCart }) => {
                 <div className="flex justify-between items-center">
                   <span className="text-primary font-bold">${relatedProduct.price}</span>
                   <button
-                    onClick={() => onAddToCart(relatedProduct)}
+                    onClick={() => dispatch(addToCart(relatedProduct))}
                     className="btn-primary text-sm px-3 py-1"
                   >
                     Add

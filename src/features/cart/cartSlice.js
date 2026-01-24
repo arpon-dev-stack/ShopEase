@@ -5,22 +5,31 @@ const cartSlice = createSlice({
     initialState: {
         items: [],
         shippingCost: 5.00,
-        taxRate: 0.08, 
+        taxRate: 0.08,
     },
     reducers: {
         addToCart: (state, action) => {
             const newItem = action.payload;
             const existingItem = state.items.find(item => item.id === newItem.id);
 
+            // Determine how much we are adding: 
+            // If newItem.quantity exists, use it. Otherwise, default to 1.
+            const amountToAdd = newItem.quantity !== undefined ? newItem.quantity : 1;
+
             if (existingItem) {
-                existingItem.quantity++;
+                // Increment the existing quantity by the amount calculated above
+                existingItem.quantity += amountToAdd;
             } else {
-                state.items.push({ ...newItem, quantity: 1 });
+                // Create the new entry. 
+                // We spread the item and set the quantity to our amountToAdd
+                state.items.push({
+                    ...newItem,
+                    quantity: amountToAdd
+                });
             }
         },
         incrementQuantity: (state, action) => {
 
-            console.log("action on increment", action.payload);
             // FIX: Find by ID, not the whole object
             const item = state.items.find(item => item.id === action.payload.id);
             if (item) {
@@ -29,7 +38,6 @@ const cartSlice = createSlice({
         },
         decrementQuantity: (state, action) => {
 
-            console.log("action on decrement", action.payload);
             // FIX: Find by ID
             const item = state.items.find(item => item.id === action.payload.id);
             if (item && item.quantity > 1) {
@@ -52,11 +60,11 @@ const cartSlice = createSlice({
     }
 });
 
-export const { 
-    addToCart, 
-    incrementQuantity, 
-    decrementQuantity, 
-    removeFromCart, 
+export const {
+    addToCart,
+    incrementQuantity,
+    decrementQuantity,
+    removeFromCart,
     // updateShipping 
 } = cartSlice.actions;
 

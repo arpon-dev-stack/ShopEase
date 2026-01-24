@@ -8,17 +8,17 @@ const initialProductSlice = createSlice({
         filter: (state, actions) => {
             return state.map(item => {
                 if (actions.payload === "All") {
-                    return {...item, isShow: true}
+                    return { ...item, isShow: true }
                 } else if (item.category !== actions.payload) {
-                    return {...item, isShow: false}
+                    return { ...item, isShow: false }
                 } else {
-                    return {...item, isShow: true}
+                    return { ...item, isShow: true }
                 }
                 return item;
             });
         }
-    } 
+    }
 });
 
-export const {filter} = initialProductSlice.actions;
+export const { filter } = initialProductSlice.actions;
 export default initialProductSlice.reducer;
