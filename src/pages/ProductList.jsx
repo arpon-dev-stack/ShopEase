@@ -1,33 +1,53 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ProductCard from '../components/ProductCard';
-import { products, categories } from '../data';
 import { Filter, Grid, List } from 'lucide-react';
+import { fetchNewProducts } from '../features/product/initialProduct';
+import { useSelector, useDispatch } from 'react-redux';
+import { filteredProducts } from '../utills/filter'
 
 const ProductList = ({ onAddToCart }) => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [sortBy, setSortBy] = useState('default');
   const [viewMode, setViewMode] = useState('grid');
   const [priceRange, setPriceRange] = useState([0, 500]);
+  const dispatch = useDispatch();
+  const { items, loading, hasMore, status } = useSelector(state => state.products);
+  const uniqueArray = ['All', ...new Set(items.map(product => product.category))];
+  const loadContentRef = useRef();
 
-  const filteredProducts = products
-    .filter(product => 
-      selectedCategory === 'All' || product.category === selectedCategory
-    )
-    .filter(product => 
-      product.price >= priceRange[0] && product.price <= priceRange[1]
-    )
-    .sort((a, b) => {
-      switch (sortBy) {
-        case 'price-low':
-          return a.price - b.price;
-        case 'price-high':
-          return b.price - a.price;
-        case 'rating':
-          return b.rating - a.rating;
-        default:
-          return 0;
+  useEffect(() => {
+    if (status === 'idle') {
+      dispatch(fetchNewProducts());
+    }
+  }, [status, dispatch]);
+
+  useEffect(() => {
+    // 1. Create the observer
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const target = entries[0];
+        // 2. If loader is visible AND we aren't already fetching
+        if (target.isIntersecting && hasMore && !loading) {
+          dispatch(fetchNewProducts());
+        }
+      },
+      { threshold: 1 } // Trigger when 50% of the loader is visible
+    );
+
+    // 3. Start watching the ref
+    if (loadContentRef.current) {
+      observer.observe(loadContentRef.current);
+    }
+
+    // 4. Cleanup
+    return () => {
+      if (loadContentRef.current) {
+        observer.unobserve(loadContentRef.current);
       }
-    });
+    };
+  }, [dispatch, hasMore, loading]);
+
+  const filteredProduct = filteredProducts(items, selectedCategory, priceRange, sortBy);
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
@@ -43,15 +63,14 @@ const ProductList = ({ onAddToCart }) => {
           <div className="mb-6">
             <h4 className="font-medium mb-3">Categories</h4>
             <div className="space-y-2">
-              {categories.map((category) => (
+              {uniqueArray.map((category) => (
                 <button
                   key={category}
                   onClick={() => setSelectedCategory(category)}
-                  className={`block w-full text-left px-3 py-2 rounded ${
-                    selectedCategory === category
-                      ? 'bg-primary text-white'
-                      : 'hover:bg-gray-100'
-                  }`}
+                  className={`block w-full text-left px-3 py-2 rounded ${selectedCategory === category
+                    ? 'bg-primary text-white'
+                    : 'hover:bg-gray-100'
+                    }`}
                 >
                   {category}
                 </button>
@@ -99,11 +118,10 @@ const ProductList = ({ onAddToCart }) => {
                 <button
                   key={option.value}
                   onClick={() => setSortBy(option.value)}
-                  className={`block w-full text-left px-3 py-2 rounded ${
-                    sortBy === option.value
-                      ? 'bg-primary text-white'
-                      : 'hover:bg-gray-100'
-                  }`}
+                  className={`block w-full text-left px-3 py-2 rounded ${sortBy === option.value
+                    ? 'bg-primary text-white'
+                    : 'hover:bg-gray-100'
+                    }`}
                 >
                   {option.label}
                 </button>
@@ -117,24 +135,22 @@ const ProductList = ({ onAddToCart }) => {
       <div className="lg:w-3/4">
         <div className="flex justify-between items-center mb-6">
           <h2 className="text-2xl font-bold">
-            Products ({filteredProducts.length})
+            Products ({filteredProduct.length})
           </h2>
-          
+
           <div className="flex items-center space-x-4">
             <div className="flex bg-gray-100 rounded-lg p-1">
               <button
                 onClick={() => setViewMode('grid')}
-                className={`p-2 rounded ${
-                  viewMode === 'grid' ? 'bg-white shadow' : ''
-                }`}
+                className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow' : ''
+                  }`}
               >
                 <Grid className="w-5 h-5" />
               </button>
               <button
                 onClick={() => setViewMode('list')}
-                className={`p-2 rounded ${
-                  viewMode === 'list' ? 'bg-white shadow' : ''
-                }`}
+                className={`p-2 rounded ${viewMode === 'list' ? 'bg-white shadow' : ''
+                  }`}
               >
                 <List className="w-5 h-5" />
               </button>
@@ -145,7 +161,7 @@ const ProductList = ({ onAddToCart }) => {
         {/* Products Grid/List */}
         {viewMode === 'grid' ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProducts.map((product) => (
+            {filteredProduct.map((product) => (
               <ProductCard
                 key={product.id}
                 product={product}
@@ -155,7 +171,7 @@ const ProductList = ({ onAddToCart }) => {
           </div>
         ) : (
           <div className="space-y-4">
-            {filteredProducts.map((product) => (
+            {filteredProduct.map((product) => (
               <div key={product.id} className="bg-white rounded-lg shadow-md p-6 flex">
                 <img
                   src={product.image}
@@ -182,14 +198,19 @@ const ProductList = ({ onAddToCart }) => {
           </div>
         )}
 
-        {filteredProducts.length === 0 && (
+        {filteredProduct.length === 0 ? (
           <div className="text-center py-12">
             <h3 className="text-xl font-semibold text-gray-600 mb-2">
               No products found
             </h3>
             <p className="text-gray-500">Try adjusting your filters</p>
           </div>
+        ) : (
+          <div className='w-full h-20 bg-blue-500 mt-6 rounded-lg flex justify-center items-center' ref={loadContentRef}>
+            <svg className="mr-3 -ml-1 size-10 animate-spin text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+          </div>
         )}
+
       </div>
     </div>
   );

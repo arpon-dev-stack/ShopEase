@@ -8,10 +8,10 @@ import { incrementQuantity, decrementQuantity, addToCart } from '../features/car
 const ProductDetail = ({ onAddToCart }) => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState(1);  
   const [selectedImage, setSelectedImage] = useState(0);
   const dispatch = useDispatch();
-  const cartProducts = useSelector(state => state.initialProduct)
+  const cartProducts = useSelector(state => state.products);
 
   const product = cartProducts.find(p => p.id === parseInt(id));
 

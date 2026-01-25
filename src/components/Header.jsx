@@ -12,8 +12,6 @@ const Header = () => {
   const signInDialogRef = useRef();
   const signUpDialogRef = useRef();
 
-  console.log(itemCount)
-
   const openSignInModal = () => {
     closeSignUpModel()
     signInDialogRef.current?.showModal();

@@ -53,10 +53,6 @@ const cartSlice = createSlice({
             // Remove the item entirely from the array
             state.items = state.items.filter(item => item.id !== action.payload.id);
         },
-        // updateShipping: (state, action) => {
-        //     // Bonus: Action to change shipping cost
-        //     state.shippingCost = action.payload;
-        // }
     }
 });
 

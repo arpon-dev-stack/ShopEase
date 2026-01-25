@@ -4,6 +4,8 @@ import { Star, ShoppingBag } from 'lucide-react';
 import { addToCart } from '../features/cart/cartSlice';
 import { useDispatch } from 'react-redux';
 
+const BASE_URL = import.meta.env.VITE_DEMOBACKEND
+
 const ProductCard = memo(({ product}) => {
   const dispatch = useDispatch()
   return (
@@ -11,9 +13,9 @@ const ProductCard = memo(({ product}) => {
       {/* Product Image */}
       <div className="relative h-48 overflow-hidden">
         <img
-          src={product.image}
+          src={`${product.image.split('/')[1] === 'src' ? product.image : BASE_URL + product.image}`}
           alt={product.name}
-          className="w-full h-full object-cover hover:scale-[1.001] transition-transform duration-300"
+          className="min-w-full min-h-48 object-cover hover:scale-[1.001] transition-transform duration-300"
           loading='lazy'
         />
         <span className="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded">
@@ -73,7 +75,7 @@ const ProductCard = memo(({ product}) => {
               Add
             </button>
           </div>
-        </div>
+        </div> 
       </div>
     </div>
   );
