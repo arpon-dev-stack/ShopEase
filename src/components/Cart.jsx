@@ -1,13 +1,13 @@
 import React from 'react';
-import { incrementQuantity, decrementQuantity, removeFromCart } from '../features/cart/cartSlice';
+import { addToCart, decrementQuantity, removeFromCart } from '../features/cart/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Trash2, Plus, Minus } from 'lucide-react';
-import { selectCartTotals } from '../features/cart/cartSelectors';
+// import { selectCartTotals } from '../features/cart/cartSelectors';
 
 const Cart = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector(state => state.cart);
-  const { shipping } = useSelector(selectCartTotals);
+  // const { shipping } = useSelector(selectCartTotals);
 
   const calculateTotal = () => {
     return cartItems.items.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -61,7 +61,7 @@ const Cart = () => {
                 </button>
                 <span className="px-4 py-2 w-12 text-center">{item.quantity}</span>
                 <button
-                  onClick={() => dispatch(incrementQuantity(item))}
+                  onClick={() => dispatch(addToCart(item))}
                   className="px-4 py-2 hover:bg-gray-100"
                 >
                   +
@@ -91,7 +91,7 @@ const Cart = () => {
         </div>
         <div className="flex justify-between items-center mb-4">
           <span className="text-gray-600">Shipping</span>
-          <span className="font-bold">${shipping}</span>
+          {/* <span className="font-bold">${shipping}</span> */}
         </div>
         <div className="flex justify-between items-center text-lg font-bold mb-6">
           <span>Total</span>

@@ -5,11 +5,11 @@ import { useSelector, useDispatch } from 'react-redux';
 import Hero from '../components/Hero';
 
 const Home = () => {
-  const {initialProducts} = useSelector(state => state.products);
-  const uniqueArray = ['All', ...new Set(initialProducts.map(product => product.category))];
+  const {items, categories} = useSelector(state => state.productBrif);
+
   const [selectCategory, setSelectCategory] = useState('All');
 
-  const filteredProducts = selectCategory === 'All' ? initialProducts : initialProducts.filter(product => product.category === selectCategory)
+  const filteredProducts = selectCategory === 'All' ? items : items.filter(product => product.category === selectCategory)
 
   return (
     <div className="">
@@ -20,10 +20,10 @@ const Home = () => {
       <section className='mt-1'>
         <h2 className="text-3xl font-bold mb-6">Shop by Category</h2>
         <div className="flex flex-wrap gap-3 mb-6">
-          {uniqueArray.map((product, key) => (
+          {['All', ...categories].map((product, key) => (
             <button
               key={key}
-              onClick={() => selectCategory(product)}
+              onClick={() => setSelectCategory(product)}
               className={`px-6 py-2 rounded-full transition ${product === selectCategory
                 ? 'bg-primary text-white'
                 : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
@@ -39,7 +39,7 @@ const Home = () => {
       <section>
         <h2 className="text-3xl font-bold mb-6">Featured Products</h2>
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-1000">
-          {filteredProducts.map(product => <ProductCard key={product.key} product={product}/>)}
+          {filteredProducts.map(product => <ProductCard key={product.id} product={product}/>)}
         </div>
       </section>
 

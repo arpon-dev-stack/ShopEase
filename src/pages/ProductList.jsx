@@ -1,25 +1,23 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, Suspense } from 'react';
 import ProductCard from '../components/ProductCard';
 import { Filter, Grid, List } from 'lucide-react';
-import { fetchNewProducts } from '../features/product/initialProduct';
-import { useSelector, useDispatch } from 'react-redux';
-import { filteredProducts } from '../utills/filter'
+import ProductCardSkeleton from '../components/ProductCardSkeliton';
+import { useGetProductsQuery } from '../services/products/product';
+import { useSelector } from 'react-redux';
 
-const ProductList = ({ onAddToCart }) => {
-  const [selectedCategory, setSelectedCategory] = useState('All');
-  const [sortBy, setSortBy] = useState('default');
-  const [viewMode, setViewMode] = useState('grid');
-  const [priceRange, setPriceRange] = useState([0, 500]);
-  const dispatch = useDispatch();
-  const { items, loading, hasMore, status } = useSelector(state => state.products);
-  const uniqueArray = ['All', ...new Set(items.map(product => product.category))];
+const ProductList = () => {
+  const [filter, setFilter] = useState({
+    category: 'All',
+    maxPrice: 1000,
+    minPrice: 0,
+    sort: 'Default'
+  });
+  const { isError, isLoading, data, isSuccess } = useGetProductsQuery(filter);
   const loadContentRef = useRef();
+  const [viewMode, setViewMode] = useState('Grid');
+  const category = useSelector(state => state.productBrif.categories);
 
-  useEffect(() => {
-    if (status === 'idle') {
-      dispatch(fetchNewProducts());
-    }
-  }, [status, dispatch]);
+  console.log(data)
 
   useEffect(() => {
     // 1. Create the observer
@@ -27,7 +25,7 @@ const ProductList = ({ onAddToCart }) => {
       (entries) => {
         const target = entries[0];
         // 2. If loader is visible AND we aren't already fetching
-        if (target.isIntersecting && hasMore && !loading) {
+        if (target.isIntersecting && !isLoading) {
           dispatch(fetchNewProducts());
         }
       },
@@ -45,14 +43,12 @@ const ProductList = ({ onAddToCart }) => {
         observer.unobserve(loadContentRef.current);
       }
     };
-  }, [dispatch, hasMore, loading]);
-
-  const filteredProduct = filteredProducts(items, selectedCategory, priceRange, sortBy);
+  }, [!isLoading]);
 
   return (
     <div className="flex flex-col lg:flex-row gap-8">
       {/* Filters Sidebar */}
-      <div className="lg:w-1/4">
+      {isSuccess && <> <div className="lg:w-1/4">
         <div className="bg-white p-6 rounded-lg shadow-md sticky top-24">
           <h3 className="text-lg font-semibold mb-4 flex items-center">
             <Filter className="w-5 h-5 mr-2" />
@@ -63,11 +59,11 @@ const ProductList = ({ onAddToCart }) => {
           <div className="mb-6">
             <h4 className="font-medium mb-3">Categories</h4>
             <div className="space-y-2">
-              {uniqueArray.map((category) => (
+              {category.map((category) => (
                 <button
                   key={category}
-                  onClick={() => setSelectedCategory(category)}
-                  className={`block w-full text-left px-3 py-2 rounded ${selectedCategory === category
+                  onClick={() => setFilter({ ...filter, category: category })}
+                  className={`block w-full text-left px-3 py-2 rounded ${filter.category === category
                     ? 'bg-primary text-white'
                     : 'hover:bg-gray-100'
                     }`}
@@ -83,23 +79,23 @@ const ProductList = ({ onAddToCart }) => {
             <h4 className="font-medium mb-3">Price Range</h4>
             <div className="space-y-4">
               <div className="flex justify-between">
-                <span>${priceRange[0]}</span>
-                <span>${priceRange[1]}</span>
+                <span>${filter.minPrice}</span>
+                <span>${filter.maxPrice}</span>
               </div>
               <input
                 type="range"
                 min="0"
-                max="500"
-                value={priceRange[0]}
-                onChange={(e) => setPriceRange([parseInt(e.target.value), priceRange[1]])}
+                max="1000"
+                value={filter.minPrice}
+                onChange={e => setFilter({ ...filter, minPrice: e.target.value })}
                 className="w-full"
               />
               <input
                 type="range"
                 min="0"
-                max="500"
-                value={priceRange[1]}
-                onChange={(e) => setPriceRange([priceRange[0], parseInt(e.target.value)])}
+                max="1000"
+                value={filter.maxPrice}
+                onChange={e => setFilter({ ...filter, maxPrice: e.target.value })}
                 className="w-full"
               />
             </div>
@@ -117,8 +113,8 @@ const ProductList = ({ onAddToCart }) => {
               ].map((option) => (
                 <button
                   key={option.value}
-                  onClick={() => setSortBy(option.value)}
-                  className={`block w-full text-left px-3 py-2 rounded ${sortBy === option.value
+                  onClick={() => setFilter({ ...filter, sort: option.value })}
+                  className={`block w-full text-left px-3 py-2 rounded ${filter.sort === option.value
                     ? 'bg-primary text-white'
                     : 'hover:bg-gray-100'
                     }`}
@@ -131,46 +127,45 @@ const ProductList = ({ onAddToCart }) => {
         </div>
       </div>
 
-      {/* Products Section */}
-      <div className="lg:w-3/4">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-2xl font-bold">
-            Products ({filteredProduct.length})
-          </h2>
+        {/* Products Section */}
+        <div className="lg:w-3/4">
+          <div className="flex justify-between items-center mb-6">
+            <h2 className="text-2xl font-bold">
+              {/* Products ({filteredProduct.length}) */}
+            </h2>
 
-          <div className="flex items-center space-x-4">
-            <div className="flex bg-gray-100 rounded-lg p-1">
-              <button
-                onClick={() => setViewMode('grid')}
-                className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow' : ''
-                  }`}
-              >
-                <Grid className="w-5 h-5" />
-              </button>
-              <button
-                onClick={() => setViewMode('list')}
-                className={`p-2 rounded ${viewMode === 'list' ? 'bg-white shadow' : ''
-                  }`}
-              >
-                <List className="w-5 h-5" />
-              </button>
+            <div className="flex items-center space-x-4">
+              <div className="flex bg-gray-100 rounded-lg p-1">
+                <button
+                  onClick={() => setViewMode('grid')}
+                  className={`p-2 rounded ${viewMode === 'grid' ? 'bg-white shadow' : ''
+                    }`}
+                >
+                  <Grid className="w-5 h-5" />
+                </button>
+                <button
+                  onClick={() => setViewMode('list')}
+                  className={`p-2 rounded ${viewMode === 'list' ? 'bg-white shadow' : ''
+                    }`}
+                >
+                  <List className="w-5 h-5" />
+                </button>
+              </div>
             </div>
           </div>
-        </div>
 
-        {/* Products Grid/List */}
-        {viewMode === 'grid' ? (
+          {/* Products Grid/List */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredProduct.map((product) => (
-              <ProductCard
-                key={product.id}
-                product={product}
-                onAddToCart={onAddToCart}
-              />
+            {data?.map((product) => (
+              <Suspense key={product.id} fallback={<ProductCardSkeleton />}>
+                <ProductCard
+                  product={product}
+                />
+
+              </Suspense>
             ))}
           </div>
-        ) : (
-          <div className="space-y-4">
+          {/* <div className="space-y-4">
             {filteredProduct.map((product) => (
               <div key={product.id} className="bg-white rounded-lg shadow-md p-6 flex">
                 <img
@@ -195,23 +190,25 @@ const ProductList = ({ onAddToCart }) => {
                 </div>
               </div>
             ))}
-          </div>
-        )}
-
-        {filteredProduct.length === 0 ? (
-          <div className="text-center py-12">
-            <h3 className="text-xl font-semibold text-gray-600 mb-2">
-              No products found
-            </h3>
-            <p className="text-gray-500">Try adjusting your filters</p>
-          </div>
-        ) : (
-          <div className='w-full h-20 bg-blue-500 mt-6 rounded-lg flex justify-center items-center' ref={loadContentRef}>
-            <svg className="mr-3 -ml-1 size-10 animate-spin text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-          </div>
-        )}
-
-      </div>
+          </div> */}
+        </div>
+      </>
+      }
+      {data?.length === 0 && <div className=" w-full text-center py-12">
+        <h3 className="text-xl font-semibold text-gray-600 mb-2">
+          No products found
+        </h3>
+        <p className="text-gray-500">Try adjusting your filters</p>
+      </div>}
+      {isError && <div className=" w-full text-center py-12">
+        <h3 className="text-xl font-semibold text-gray-600 mb-2">
+          No products found
+        </h3>
+        <p className="text-gray-500">Try adjusting your filters</p>
+      </div>}
+      {isLoading && <div className='w-full h-20 bg-blue-500 mt-6 rounded-lg flex justify-center items-center' ref={loadContentRef}>
+        <svg className="mr-3 -ml-1 size-10 animate-spin text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
+      </div>}
     </div>
   );
 };

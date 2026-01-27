@@ -11,11 +11,11 @@ const ProductCard = memo(({ product}) => {
   return (
     <div className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300 grid grid-row-5 grid-cols-1">
       {/* Product Image */}
-      <div className="relative h-48 overflow-hidden">
+      <div className="relative h-72 overflow-hidden">
         <img
           src={`${product.image.split('/')[1] === 'src' ? product.image : BASE_URL + product.image}`}
           alt={product.name}
-          className="min-w-full min-h-48 object-cover hover:scale-[1.001] transition-transform duration-300"
+          className="min-w-full min-h-72 object-cover hover:scale-[1.001] transition-transform duration-300"
           loading='lazy'
         />
         <span className="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded">
@@ -68,7 +68,7 @@ const ProductCard = memo(({ product}) => {
               View
             </Link>
             <button
-              onClick={() => {dispatch(addToCart(product))}}
+              onClick={() => {dispatch(addToCart({...product, quantity: 1 }))}}
               className="btn-primary text-sm px-3 py-2 flex items-center"
             >
               <ShoppingBag className="w-4 h-4 mr-1" />

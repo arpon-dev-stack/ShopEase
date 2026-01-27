@@ -2,16 +2,14 @@ import { useState, useRef } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { ShoppingCart, Search, Menu, X } from 'lucide-react';
 import { useSelector } from 'react-redux';
-import { selectCartTotals } from '../features/cart/cartSelectors';
+import { selectTotalQuantity } from '../utills/filter';
 
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const cart = useSelector(state => state.cart);
-  const { itemCount } = useSelector(selectCartTotals);
+  const cart = useSelector(state => state.cart.items);
   const signInDialogRef = useRef();
   const signUpDialogRef = useRef();
-
   const openSignInModal = () => {
     closeSignUpModel()
     signInDialogRef.current?.showModal();
@@ -86,9 +84,9 @@ const Header = () => {
           <div className="flex items-center space-x-5">
             <Link to="/cart" className="relative">
               <ShoppingCart className="sm:w-6 w-9 h-9  sm:h-6 text-gray-700 hover:text-primary transition" />
-              {itemCount > 0 && (
+              {cart.length > 0 && (
                 <span className="absolute -top-2 -right-2 bg-red-500 text-white text-xs rounded-full w-5 h-5 flex items-center justify-center">
-                  {itemCount > 9 ? "9+" : itemCount}
+                  {selectTotalQuantity(cart) > 9 ? "9+" : selectTotalQuantity(cart)}
                 </span>
               )}
             </Link>

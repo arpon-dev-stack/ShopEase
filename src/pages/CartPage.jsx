@@ -1,10 +1,11 @@
 import { Link } from 'react-router-dom';
 import Cart from '../components/Cart'
 import { useSelector} from 'react-redux';
-import { selectCartTotals } from '../features/cart/cartSelectors';
+import { selectCartTotals } from '../utills/filter';
 
 const CartPage = () => {
-  const {subtotal, tax, total, shipping} = useSelector(selectCartTotals)
+const cart = useSelector(state => state.cart.items)
+const {shipping, subtotal, tax, total} = selectCartTotals(cart);
 
   return (
     <div className="max-w-6xl mx-auto">

@@ -8,22 +8,25 @@ import ProductDetail from './pages/ProductDetail';
 import CartPage from './pages/CartPage';
 import Categorie from './pages/Categorie'
 import Deal from './pages/Deal';
+import ScrollToTop from './components/ScrollToTop';
 
 function App() {
 
   return (
     <Router>
       <div className="min-w-[280px] max-w-[1400px] mx-auto flex flex-col relative">
-        <Header/>
+        <Header />
         <main className="flex-1 container mx-auto px-4 py-5 z-30">
-          <Routes>
-            <Route path="/" element={<Home/>} />
-            <Route path="/products" element={<ProductList/>} />
-            <Route path="/product/:id" element={<ProductDetail/>} />
-            <Route path="/cart" element={<CartPage/>}/>
-            <Route path='/categories' element={<Categorie />} />
-            <Route path='/deals' element={<Deal />}/>
-          </Routes>
+          <ScrollToTop>
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/products" element={<ProductList />} />
+              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/cart" element={<CartPage />} />
+              <Route path='/categories' element={<Categorie />} />
+              <Route path='/deals' element={<Deal />} />
+            </Routes>
+          </ScrollToTop>
         </main>
         <Footer />
       </div>
