@@ -39,6 +39,7 @@ const dataDetail = () => {
                   src={`${backend}${data.image}`}
                   alt={data.name}
                   className="w-full h-96 object-cover rounded-lg"
+                  loading='lazy'
                 />
               </div>
             </div>
@@ -169,6 +170,7 @@ const dataDetail = () => {
                   src={relateddata.image}
                   alt={relateddata.name}
                   className="w-full h-40 object-cover rounded mb-4"
+                  loading="lazy"
                 />
                 <h3 className="font-semibold mb-2">{relateddata.name}</h3>
                 <div className="flex justify-between items-center">

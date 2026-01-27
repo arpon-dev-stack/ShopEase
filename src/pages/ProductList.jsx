@@ -172,6 +172,7 @@ const ProductList = () => {
                   src={product.image}
                   alt={product.name}
                   className="w-32 h-32 object-cover rounded mr-6"
+                  loading="lazy"
                 />
                 <div className="flex-1">
                   <h3 className="text-xl font-semibold mb-2">{product.name}</h3>

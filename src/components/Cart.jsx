@@ -2,8 +2,8 @@ import React from 'react';
 import { addToCart, decrementQuantity, removeFromCart } from '../features/cart/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Trash2, Plus, Minus } from 'lucide-react';
-// import { selectCartTotals } from '../features/cart/cartSelectors';
 
+const backend = import.meta.env.VITE_DEMOBACKEND
 const Cart = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector(state => state.cart);
@@ -38,9 +38,10 @@ const Cart = () => {
             {/* Product Image */}
             <div className="flex justify-start gap-x-2">
               <img
-                src={item.image}
+                src={`${backend}${item.image}`}
                 alt={item.name}
                 className="w-20 h-20 object-cover rounded"
+                loading='lazy'
               />
               <div className="">
                 <h3 className="font-semibold text-gray-800">{item.name}</h3>
