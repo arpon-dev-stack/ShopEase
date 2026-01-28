@@ -1,194 +1,143 @@
+import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Star, Truck, Shield, RefreshCw, ChevronLeft } from 'lucide-react';
-import { addToCart, decrementQuantity, removeFromCart } from '../features/cart/cartSlice';
-import { useState } from 'react';
+import { Star, Truck, Shield, RefreshCw, ChevronLeft, Loader2 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
+import { addToCart } from '../features/cart/cartSlice';
 import { useGetProductByIdQuery } from '../services/productDetail';
+import ProductCardSkeleton from '../components/ProductCardSkeliton';
+import Badge from '../components/Badge';
+const BACKEND_URL = import.meta.env.VITE_DEMOBACKEND;
 
-const backend = import.meta.env.VITE_DEMOBACKEND;
-
-const dataDetail = () => {
+const DataDetail = () => {
   const { id } = useParams();
-  const { isLoading, data, isError, isSuccess } = useGetProductByIdQuery(id)
   const navigate = useNavigate();
   const dispatch = useDispatch();
+
+  const { data, isLoading, isError, isSuccess } = useGetProductByIdQuery(id);
   const [quantity, setQuantity] = useState(1);
 
-  if (isSuccess) {
-    console.log(`${backend}${data?.image}`)
-  }
+  // Memoize image URL to prevent recalculation on every render
+  const imageUrl = useMemo(() =>
+    data?.image ? `${BACKEND_URL}${data.image}` : '',
+    [data?.image]);
+
+  console.log(data)
+  const handleAddToCart = () => {
+    if (data) {
+      dispatch(addToCart({ ...data, quantity }));
+    }
+  };
+
+  // Guard for decrementing quantity
+  const updateQuantity = (val) => {
+    setQuantity(prev => Math.max(1, prev + val));
+  };
+
   return (
-    <div className="space-y-12">
-      {/* Back Button */}
+    <div className="space-y-8 max-w-7xl mx-auto px-4">
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center text-gray-600 hover:text-primary transition"
+        className="flex items-center text-gray-600 hover:text-primary transition-colors group"
       >
-        <ChevronLeft className="w-5 h-5 mr-1" />
+        <ChevronLeft className="w-5 h-5 mr-1 group-hover:-translate-x-1 transition-transform" />
         Back
       </button>
-
-      {/* data Details */}
-      {
-        isSuccess && <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex flex-col lg:flex-row gap-8">
-            {/* data Images */}
+      {isSuccess ?
+        (<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-10">
+          <div className="flex flex-col lg:flex-row gap-12">
+            {/* Image Section */}
             <div className="lg:w-1/2">
-              <div className="mb-4">
+              <div className="sticky top-6">
                 <img
-                  src={`${backend}${data.image}`}
+                  src={imageUrl}
                   alt={data.name}
-                  className="w-full h-96 object-cover rounded-lg"
-                  loading='lazy'
+                  className="w-full aspect-square object-cover rounded-xl shadow-inner"
+                  loading="eager"
                 />
               </div>
             </div>
 
-            {/* data Info */}
-            <div className="lg:w-1/2">
-              <h1 className="text-3xl font-bold mb-4">
-                {data.name}
-              </h1>
-
-              <div className="flex items-center mb-4">
-                <div className="flex items-center mr-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star
-                      key={i}
-                      className={`w-5 h-5 ${i < Math.floor(data.rating)
-                          ? 'text-yellow-400 fill-yellow-400'
-                          : 'text-gray-300'
-                        }`}
-                    />
-                  ))}
-                </div>
-                <span className="text-gray-600">
-                  {data.rating} • {data.reviews} reviews
-                </span>
-                <span className="ml-4 px-2 py-1 bg-primary text-white text-sm rounded">
+            {/* Info Section */}
+            <div className="lg:w-1/2 flex flex-col">
+              <div className="mb-2">
+                <span className="px-3 py-1 bg-blue-50 text-primary text-xs font-bold uppercase tracking-wider rounded-full">
                   {data.category}
                 </span>
               </div>
 
-              <p className="text-gray-600 mb-6">
-                {data.description}
-              </p>
+              <h1 className="text-4xl font-extrabold text-gray-900 mb-4">{data.name}</h1>
 
-              <div className="text-4xl font-bold text-primary mb-6">
-                ${data.price}
-              </div>
-
-              {/* Quantity Selector */}
               <div className="flex items-center mb-6">
-                <span className="mr-4 font-medium">Quantity:</span>
-                <div className="flex items-center border rounded-lg">
+                <div className="flex items-center mr-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-5 h-5 ${i < Math.floor(data.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`}
+                    />
+                  ))}
+                </div>
+                <span className="text-gray-600 font-medium">
+                  {data.rating} <span className="text-gray-400 mx-1">•</span> {data.reviews} reviews
+                </span>
+              </div>
+
+              <p className="text-gray-600 text-lg leading-relaxed mb-8">{data.description}</p>
+
+              <div className="text-5xl font-bold text-gray-900 mb-8">
+                ${data.price.toLocaleString()}
+              </div>
+
+              {/* Quantity & Actions */}
+              <div className="space-y-6 mb-10">
+                <div className="flex items-center">
+                  <span className="mr-6 font-semibold text-gray-700">Quantity</span>
+                  <div className="flex items-center border-2 border-gray-100 rounded-xl overflow-hidden">
+                    <button
+                      onClick={() => updateQuantity(-1)}
+                      className="px-5 py-3 hover:bg-gray-50 transition-colors font-bold"
+                    >-</button>
+                    <span className="px-6 py-3 bg-white min-w-[60px] text-center font-bold text-lg">{quantity}</span>
+                    <button
+                      onClick={() => updateQuantity(1)}
+                      className="px-5 py-3 hover:bg-gray-50 transition-colors font-bold"
+                    >+</button>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
                   <button
-                    onClick={() => setQuantity(prev => prev - 1)}
-                    className="px-4 py-2 hover:bg-gray-100"
+                    onClick={handleAddToCart}
+                    className="bg-primary hover:bg-primary/90 text-white flex-1 py-4 rounded-xl font-bold text-lg transition-all active:scale-95 shadow-lg shadow-primary/20"
                   >
-                    -
+                    Add to Cart
                   </button>
-                  <span className="px-4 py-2 w-12 text-center">{quantity}</span>
-                  <button
-                    onClick={() => setQuantity(prev => prev + 1)}
-                    className="px-4 py-2 hover:bg-gray-100"
-                  >
-                    +
+                  <button className="border-2 border-gray-200 hover:border-gray-800 flex-1 py-4 rounded-xl font-bold text-lg transition-all">
+                    Buy Now
                   </button>
                 </div>
               </div>
 
-              {/* Action Buttons */}
-              <div className="flex space-x-4 mb-8">
-                <button
-                  onClick={() => dispatch(addToCart({ ...data, quantity }))}
-                  className="btn-primary flex-1 py-3 text-lg"
-                >
-                  Add to Cart
-                </button>
-                <button className="btn-secondary flex-1 py-3 text-lg">
-                  Buy Now
-                </button>
-              </div>
-
-              {/* Features */}
-              <div className="grid grid-cols-2 gap-4">
-                <div className="flex items-center">
-                  <Truck className="w-6 h-6 text-primary mr-3" />
-                  <div>
-                    <div className="font-medium">Free Shipping</div>
-                    <div className="text-sm text-gray-600">Over $50</div>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <Shield className="w-6 h-6 text-primary mr-3" />
-                  <div>
-                    <div className="font-medium">2-Year Warranty</div>
-                    <div className="text-sm text-gray-600">Guarantee</div>
-                  </div>
-                </div>
-                <div className="flex items-center">
-                  <RefreshCw className="w-6 h-6 text-primary mr-3" />
-                  <div>
-                    <div className="font-medium">Easy Returns</div>
-                    <div className="text-sm text-gray-600">30 Days</div>
-                  </div>
-                </div>
+              {/* Trust Badges */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-gray-100">
+                <Badge icon={<Truck />} title="Free Shipping" sub="Over $50" />
+                <Badge icon={<Shield />} title="2-Year Warranty" sub="Guaranteed" />
+                <Badge icon={<RefreshCw />} title="Easy Returns" sub="30 Days" />
               </div>
             </div>
           </div>
-        </div>
-      }
-
-      {
-        isLoading &&
-        <div className='w-full h-40 bg-blue-500 mt-6 rounded-lg flex justify-center items-center'>
-          <svg className="mr-3 -ml-1 size-10 animate-spin text-white" fill="none" viewBox="0 0 24 24"><circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4"></circle><path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path></svg>
-        </div>
-      }
-      {
-        isError &&
-        <div className="text-center py-12">
-          <h2 className="text-2xl font-bold text-gray-600 mb-4">data not found</h2>
-          <button
-            onClick={() => navigate('/datas')}
-            className="btn-primary"
-          >
-            Back to datas
-          </button>
-        </div>
-      }
-
-      {/* Related datas */}
-      {/* {relateddatas.length > 0 && (
-        <div>
-          <h2 className="text-2xl font-bold mb-6">Related datas</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relateddatas.map((relateddata) => (
-              <div key={relateddata.id} className="bg-white rounded-lg shadow-md p-4">
-                <img
-                  src={relateddata.image}
-                  alt={relateddata.name}
-                  className="w-full h-40 object-cover rounded mb-4"
-                  loading="lazy"
-                />
-                <h3 className="font-semibold mb-2">{relateddata.name}</h3>
-                <div className="flex justify-between items-center">
-                  <span className="text-primary font-bold">${relateddata.price}</span>
-                  <button
-                    onClick={() => dispatch(addToCart(relateddata))}
-                    className="btn-primary text-sm px-3 py-1"
-                  >
-                    Add
-                  </button>
-                </div>
-              </div>
-            ))}
+        </div>) : isLoading ? (
+          <ProductCardSkeleton />
+        ) : (
+          <div className="text-center py-24">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Product not found</h2>
+            <button onClick={() => navigate(-1)} className="btn-primary">
+              Go Back
+            </button>
           </div>
-        </div>
-      )} */}
-    </div >
+        )}
+    </div>
   );
 };
 
-export default dataDetail;
+
+export default DataDetail;

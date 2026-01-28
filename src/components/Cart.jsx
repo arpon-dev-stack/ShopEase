@@ -73,7 +73,7 @@ const Cart = () => {
                   ${(item.price * item.quantity).toFixed(2)}
                 </p>
                 <button
-                  onClick={() => { console.log("remove"); dispatch(removeFromCart(item)) }}
+                  onClick={() => { dispatch(removeFromCart(item)) }}
                   className="text-red-500 hover:text-red-700"
                 >
                   <Trash2 className="w-7 h-7" />

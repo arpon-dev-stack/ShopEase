@@ -6,9 +6,10 @@ const productBrif = createSlice({
   initialState: {
     items: products,
     categories: [
-      "Fashion",
-      "Electronics",
-      "Home"
+      "all",
+      "fashion",
+      "electronics",
+      "home"
     ]
   }
 });

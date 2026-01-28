@@ -7,9 +7,9 @@ import Hero from '../components/Hero';
 const Home = () => {
   const {items, categories} = useSelector(state => state.productBrif);
 
-  const [selectCategory, setSelectCategory] = useState('All');
+  const [selectCategory, setSelectCategory] = useState('all');
 
-  const filteredProducts = selectCategory === 'All' ? items : items.filter(product => product.category === selectCategory)
+  const filteredProducts = selectCategory === 'all' ? items : items.filter(product => product.category === selectCategory)
 
   return (
     <div className="">
@@ -20,11 +20,11 @@ const Home = () => {
       <section className='mt-1'>
         <h2 className="text-3xl font-bold mb-6">Shop by Category</h2>
         <div className="flex flex-wrap gap-3 mb-6">
-          {['All', ...categories].map((product, key) => (
+          {[...categories].map((product, key) => (
             <button
               key={key}
               onClick={() => setSelectCategory(product)}
-              className={`px-6 py-2 rounded-full transition ${product === selectCategory
+              className={`px-6 py-2 rounded-full capitalize transition ${product === selectCategory
                 ? 'bg-primary text-white'
                 : 'bg-gray-200 text-gray-800 hover:bg-gray-300'
                 }`}
