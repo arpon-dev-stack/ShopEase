@@ -15,9 +15,10 @@ const ProductList = () => {
     page: 0
   });
 
-  const debouncedFilter = useDebounce(filter, 500)
+  const debouncedFilter = useDebounce(filter, 500);
+  const data = useSelector(state => state.productBrif.items)
 
-  const { isError, isLoading, data, isSuccess, isFetching } = useGetProductsQuery(debouncedFilter);
+  const { isError, isLoading, _, isSuccess, isFetching } = useGetProductsQuery(debouncedFilter);
   const loaderRef = useRef();
   const categories = useSelector(state => state.productBrif.categories);
 
