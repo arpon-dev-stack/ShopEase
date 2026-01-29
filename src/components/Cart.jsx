@@ -44,8 +44,8 @@ const Cart = () => {
                 loading='lazy'
               />
               <div className="">
-                <h3 className="font-semibold text-gray-800">{item.name}</h3>
-                <p className="text-gray-600 text-sm">{item.category}</p>
+                <h3 className="font-semibold capitalize text-gray-800">{item.name}</h3>
+                <p className="text-gray-600 text-sm capitalize">{item.category}</p>
                 <p className="text-primary font-bold">${item.price}</p>
               </div>
             </div>

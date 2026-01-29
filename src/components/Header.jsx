@@ -1,15 +1,12 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
 import { NavLink, Link } from 'react-router-dom';
 import { ShoppingCart, Search, Menu, X } from 'lucide-react';
-import { useSelector } from 'react-redux';
+import { useSelector, useDispatch } from 'react-redux';
 import { selectTotalQuantity } from '../utills/filter';
-import AuthInput from './AuthInput';
-import AuthModal from './AuthModal';
 import { useProductNameQuery } from '../services/products/queryProduct';
 import useDebounce from '../utills/debouncer';
-import { useSignInMutation, useSignUpMutation } from '../services/authApi';
-import { setCredentials } from '../services/auth/authSlice';
-import { useDispatch } from 'react-redux';
+import { CircleUserRound } from 'lucide-react';
+import { logout } from '../services/auth/authSlice';
 
 const NAV_LINKS = [
   { name: 'Home', path: '/' },
@@ -25,23 +22,8 @@ const Header = () => {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const debounceQuery = useDebounce(query, 300); // 300ms is standard; 5000ms is too slow
   const { data, isSuccess, isFetching } = useProductNameQuery(debounceQuery);
-  const [formData, setFormData] = useState({ email: '', password: '', fullName: '' });
   const dispatch = useDispatch()
-
-  const signInRef = useRef();
-  const signUpRef = useRef();
-
-  // Modal Handlers
-  const toggleModal = useCallback((ref, action) => {
-    if (action === 'open') {
-      // Close other modal if open
-      signInRef.current?.close();
-      signUpRef.current?.close();
-      ref.current?.showModal();
-    } else {
-      ref.current?.close();
-    }
-  }, []);
+  const { isAuthenticated, user } = useSelector((state) => state.auth);
 
   const totalQuantity = selectTotalQuantity(cart);
 
@@ -58,23 +40,6 @@ const Header = () => {
       })
       .slice(0, 4); // Limit to 4 as requested
   }, [data, query]);
-
-  const [signIn, { isLoading: isLoggingIn }] = useSignInMutation();
-  const [signUp, { isLoading: isRegistering }] = useSignUpMutation();
-
-  const handleAuth = async (type) => {
-    try {
-      const result = type === 'signin'
-        ? await signIn({ email: formData.email, password: formData.password }).unwrap()
-        : await signUp(formData).unwrap();
-
-      dispatch(setCredentials({ user: result.user, id: user.id }));
-
-      toggleModal(type === 'signin' ? signInRef : signUpRef, 'close');
-    } catch (err) {
-      alert(err.data?.message || "Authentication failed");
-    }
-  };
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50 min-w-[280px]">
@@ -174,12 +139,21 @@ const Header = () => {
               )}
             </Link>
 
-            <button
-              className="btn-primary hidden md:block px-6 py-2"
-              onClick={() => toggleModal(signInRef, 'open')}
-            >
-              Sign In
-            </button>
+            <div className='relative flex group'>
+              {isAuthenticated && user ? (<igm src={user?.image} className='h-6 w-6' />) : (<CircleUserRound className='h-6 w-6' />)}
+              <div className='absolute top-6 bg-white rounded-lg left-1/2 -translate-x-1/2 hidden flex-col group-hover:flex'>
+                {isAuthenticated && user ?
+                  <>
+                    <Link className='hover:bg-gray-200 text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Profile</Link>
+                    <button onClick={() => dispatch(logout())} className='hover:bg-gray-200 text-center p-2 rounded-lg whitespace-nowrap'>Log out</button>
+                  </> :
+                  <>
+                    <Link className='hover:bg-gray-200 text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Sign In</Link>
+                    <Link className='hover:bg-gray-200 text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Sign Up</Link>
+                  </>
+                }
+              </div>
+            </div>
 
             {/* Mobile Menu Toggle */}
             <button
@@ -217,19 +191,19 @@ const Header = () => {
                   {link.name}
                 </Link>
               ))}
-              <button
+              {/* <button
                 className="btn-primary mt-4 w-full py-3"
                 onClick={() => { setIsMenuOpen(false); toggleModal(signInRef, 'open'); }}
               >
                 Sign In
-              </button>
+              </button> */}
             </div>
           </div>
         )}
       </div>
 
       {/* Auth Modals */}
-      <AuthModal
+      {/* <AuthModal
         dialogRef={signInRef}
         title="Sign In"
         onClose={() => toggleModal(signInRef, 'close')}
@@ -253,7 +227,7 @@ const Header = () => {
         <AuthInput type="email" placeholder="Email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
         <AuthInput type="password" placeholder="Password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
         <AuthInput type="password" placeholder="Confirm Password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-      </AuthModal>
+      </AuthModal> */}
     </header>
   );
 };

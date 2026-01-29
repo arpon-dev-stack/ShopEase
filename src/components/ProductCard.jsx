@@ -18,18 +18,18 @@ const ProductCard = memo(({ product}) => {
           className="min-w-full min-h-72 object-cover hover:scale-[1.001] transition-transform duration-300"
           loading='lazy'
         />
-        <span className="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded">
+        <span className="absolute top-2 left-2 bg-primary text-white text-xs px-2 py-1 rounded capitalize">
           {product.category}
         </span>
       </div>
 
       {/* Product Info */}
       <div className="p-4 grid grid-rows-subgrd row-span-4">
-        <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1">
+        <h3 className="text-lg font-semibold text-gray-800 mb-2 line-clamp-1 capitalize">
           {product.name}
         </h3>
         
-        <p className="text-gray-600 text-sm mb-3 line-clamp-2">
+        <p className="text-gray-600 text-sm mb-3 line-clamp-2 capitalize">
           {product.description}
         </p>
         
@@ -47,7 +47,7 @@ const ProductCard = memo(({ product}) => {
               />
             ))}
           </div>
-          <span className="text-sm text-gray-600 ml-2">
+          <span className="text-sm text-gray-600 ml-2 capitalize">
             ({product.reviews} reviews)
           </span>
         </div>

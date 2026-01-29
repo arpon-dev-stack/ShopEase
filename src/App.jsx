@@ -8,6 +8,8 @@ import CartPage from './pages/CartPage';
 import Categorie from './pages/Categorie'
 import Deal from './pages/Deal';
 import ScrollToTop from './components/ScrollToTop';
+import Profile from './pages/Profile';
+import ProtectedComponent from './components/ProtectedComponent';
 
 function App() {
 
@@ -24,6 +26,7 @@ function App() {
               <Route path="/cart" element={<CartPage />} />
               <Route path='/categories' element={<Categorie />} />
               <Route path='/deals' element={<Deal />} />
+              <Route path='/profile' element={<ProtectedComponent><Profile /></ProtectedComponent>} />
             </Routes>
           </ScrollToTop>
         </main>

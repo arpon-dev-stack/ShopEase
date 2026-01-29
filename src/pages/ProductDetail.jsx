@@ -3,7 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import { Star, Truck, Shield, RefreshCw, ChevronLeft, Loader2 } from 'lucide-react';
 import { useDispatch } from 'react-redux';
 import { addToCart } from '../features/cart/cartSlice';
-import { useGetProductByIdQuery } from '../services/productDetail';
+import { useGetProductByIdQuery } from '../services/products/productDetail';
 import ProductCardSkeleton from '../components/ProductCardSkeliton';
 import Badge from '../components/Badge';
 const BACKEND_URL = import.meta.env.VITE_DEMOBACKEND;
@@ -65,7 +65,7 @@ const DataDetail = () => {
                 </span>
               </div>
 
-              <h1 className="text-4xl font-extrabold text-gray-900 mb-4">{data.name}</h1>
+              <h1 className="text-4xl font-extrabold text-gray-900 mb-4 capitalize">{data.name}</h1>
 
               <div className="flex items-center mb-6">
                 <div className="flex items-center mr-3">
@@ -81,7 +81,7 @@ const DataDetail = () => {
                 </span>
               </div>
 
-              <p className="text-gray-600 text-lg leading-relaxed mb-8">{data.description}</p>
+              <p className="text-gray-600 text-lg leading-relaxed mb-8 capitalize">{data.description}</p>
 
               <div className="text-5xl font-bold text-gray-900 mb-8">
                 ${data.price.toLocaleString()}

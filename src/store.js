@@ -2,9 +2,9 @@ import {configureStore} from '@reduxjs/toolkit'
 import productBrif from './features/product/initialProduct'
 import cartRducer from './features/cart/cartSlice'
 import { productApi } from './services/products/product'
-import { productDetail } from './services/productDetail'
+import { productDetail } from './services/products/productDetail'
 import { productName } from './services/products/queryProduct'
-import {authApi} from './services/authApi'
+import {authApi} from './services/auth/authApi'
 import authReducer from './services/auth/authSlice'
 
 const store = configureStore({

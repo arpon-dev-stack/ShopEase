@@ -9,7 +9,6 @@ const authSlice = createSlice({
       state.user = user;
       state.token = token;
       state.isAuthenticated = true;
-      // Also save to localStorage so they stay logged in after refresh
       localStorage.setItem('token', token);
     },
     logout: (state) => {
