@@ -10,6 +10,7 @@ import Deal from './pages/Deal';
 import ScrollToTop from './components/ScrollToTop';
 import Profile from './pages/Profile';
 import ProtectedComponent from './components/ProtectedComponent';
+import Checkout from './pages/Checkout';
 
 function App() {
 
@@ -27,6 +28,7 @@ function App() {
               <Route path='/categories' element={<Categorie />} />
               <Route path='/deals' element={<Deal />} />
               <Route path='/profile' element={<ProtectedComponent><Profile /></ProtectedComponent>} />
+              <Route path='/checkout' element={<ProtectedComponent><Checkout /></ProtectedComponent>} />
             </Routes>
           </ScrollToTop>
         </main>

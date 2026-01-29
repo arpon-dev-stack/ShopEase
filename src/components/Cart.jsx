@@ -2,12 +2,17 @@ import React from 'react';
 import { addToCart, decrementQuantity, removeFromCart } from '../features/cart/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
 import { Trash2, Plus, Minus } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
 const backend = import.meta.env.VITE_DEMOBACKEND
 const Cart = () => {
   const dispatch = useDispatch();
   const cartItems = useSelector(state => state.cart);
-  // const { shipping } = useSelector(selectCartTotals);
+  const navigate = useNavigate()
+
+  const handleProceed = () => {
+    navigate('/checkout', { state: cartItems })
+  }
 
   const calculateTotal = () => {
     return cartItems.items.reduce((total, item) => total + item.price * item.quantity, 0);
@@ -99,7 +104,7 @@ const Cart = () => {
           <span>${(calculateTotal() + 5.99).toFixed(2)}</span>
         </div>
 
-        <button className="btn-primary w-full py-3 text-lg">
+        <button onClick={handleProceed} className="btn-primary w-full py-3 text-lg">
           Proceed to Checkout
         </button>
       </div>

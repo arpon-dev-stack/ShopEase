@@ -1,27 +1,33 @@
 import { Link } from 'react-router-dom';
 import Cart from '../components/Cart'
-import { useSelector} from 'react-redux';
+import { useSelector } from 'react-redux';
 import { selectCartTotals } from '../utills/filter';
+import { useNavigate } from 'react-router-dom';
 
 const CartPage = () => {
-const cart = useSelector(state => state.cart.items)
-const {shipping, subtotal, tax, total} = selectCartTotals(cart);
+  const cart = useSelector(state => state.cart.items)
+  const { shipping, subtotal, tax, total } = selectCartTotals(cart);
+  const navigate = useNavigate()
+
+  const handleProceed = () => {
+    navigate('/checkout', { state: cart })
+  }
 
   return (
     <div className="max-w-6xl mx-auto">
       <h1 className="text-3xl font-bold mb-8">Your Shopping Cart</h1>
-      
+
       <div className="flex flex-col lg:flex-row gap-8">
         {/* Cart Items */}
         <div className="lg:w-2/3">
-          <Cart/>
+          <Cart />
         </div>
 
         {/* Order Summary - Sidebar */}
         <div className="lg:w-1/3">
           <div className="bg-white rounded-lg shadow-md p-6 sticky top-24">
             <h2 className="text-xl font-bold mb-6">Order Summary</h2>
-            
+
             <div className="space-y-4 mb-6">
               <div className="flex justify-between">
                 <span className="text-gray-600">Subtotal</span>
@@ -49,9 +55,9 @@ const {shipping, subtotal, tax, total} = selectCartTotals(cart);
               </div>
             </div>
 
-            <button className="btn-primary w-full py-3 mb-4">
+            { cart?.length > 0 && <button onClick={handleProceed} className="btn-primary w-full py-3 mb-4">
               Proceed to Checkout
-            </button>
+            </button>}
 
             <div className="text-center">
               <Link to="/products" className="text-primary hover:underline">

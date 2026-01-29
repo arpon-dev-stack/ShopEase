@@ -8,7 +8,8 @@ export const productApi = createApi({
     endpoints: builder => ({
         getProducts: builder.query({
             query: (filter) => {
-                if (filter.category === 'all' && filter.maxPrice === 1000 && filter.sort === 'default') {
+                console.log(filter)
+                if (filter.category === 'all' && filter.maxPrice === 1000 && filter.sort === 'default' && filter.page === 0) {
                     return '/products';
                 }
 

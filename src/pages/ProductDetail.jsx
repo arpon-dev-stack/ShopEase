@@ -1,7 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { Star, Truck, Shield, RefreshCw, ChevronLeft, Loader2 } from 'lucide-react';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { addToCart } from '../features/cart/cartSlice';
 import { useGetProductByIdQuery } from '../services/products/productDetail';
 import ProductCardSkeleton from '../components/ProductCardSkeliton';
@@ -12,6 +12,7 @@ const DataDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
+  const {isAuthenticated} = useSelector(state => state.auth)
 
   const { data, isLoading, isError, isSuccess } = useGetProductByIdQuery(id);
   const [quantity, setQuantity] = useState(1);
@@ -21,7 +22,6 @@ const DataDetail = () => {
     data?.image ? `${BACKEND_URL}${data.image}` : '',
     [data?.image]);
 
-  console.log(data)
   const handleAddToCart = () => {
     if (data) {
       dispatch(addToCart({ ...data, quantity }));
@@ -32,6 +32,10 @@ const DataDetail = () => {
   const updateQuantity = (val) => {
     setQuantity(prev => Math.max(1, prev + val));
   };
+
+  const handleBuyNow = () => {
+      navigate('/checkout', {state: {...data, quantity}})
+  }
 
   return (
     <div className="space-y-8 max-w-7xl mx-auto px-4">
@@ -111,7 +115,7 @@ const DataDetail = () => {
                   >
                     Add to Cart
                   </button>
-                  <button className="border-2 border-gray-200 hover:border-gray-800 flex-1 py-4 rounded-xl font-bold text-lg transition-all">
+                  <button className="border-2 border-gray-200 hover:border-gray-800 flex-1 py-4 rounded-xl font-bold text-lg transition-all" onClick={handleBuyNow}>
                     Buy Now
                   </button>
                 </div>

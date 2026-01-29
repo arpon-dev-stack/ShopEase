@@ -11,7 +11,8 @@ const ProductList = () => {
     category: 'all',
     maxPrice: 1000,
     minPrice: 0,
-    sort: 'default'
+    sort: 'default',
+    page: 0
   });
 
   const debouncedFilter = useDebounce(filter, 500)
@@ -20,13 +21,12 @@ const ProductList = () => {
   const loaderRef = useRef();
   const categories = useSelector(state => state.productBrif.categories);
 
-  console.log(`value of isFetching ${isFetching}, isLoading ${isLoading}, isSuccess ${isSuccess}`)
   // 2. Optimized Observer logic
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !isFetching) {
-          console.log("Fetch next page logic here");
+          setFilter({...filter, page: filter.page + 1})
         }
       },
       { threshold: 0.1 }
@@ -38,7 +38,7 @@ const ProductList = () => {
     return () => {
       if (currentLoader) observer.unobserve(currentLoader);
     };
-  }, [isFetching]); // Re-bind only when fetching status changes
+  }, [!isFetching]); // Re-bind only when fetching status changes
 
   // 3. Derived State: Filter the data locally if the API doesn't do it
   const filteredProducts = useMemo(() => {

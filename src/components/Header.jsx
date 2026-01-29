@@ -1,5 +1,5 @@
 import React, { useState, useRef, useCallback, useMemo } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink, Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Search, Menu, X } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectTotalQuantity } from '../utills/filter';
@@ -24,6 +24,7 @@ const Header = () => {
   const { data, isSuccess, isFetching } = useProductNameQuery(debounceQuery);
   const dispatch = useDispatch()
   const { isAuthenticated, user } = useSelector((state) => state.auth);
+  const location = useLocation();
 
   const totalQuantity = selectTotalQuantity(cart);
 
@@ -139,18 +140,19 @@ const Header = () => {
               )}
             </Link>
 
-            <div className='relative flex group'>
-              {isAuthenticated && user ? (<igm src={user?.image} className='h-6 w-6' />) : (<CircleUserRound className='h-6 w-6' />)}
+            <div className='relative sm:flex group hidden'>
+              {isAuthenticated && user ? (<img src={user?.image} className='h-6 w-6 bg-blue-700 rounded-full' />) : (<CircleUserRound className='h-6 w-6' />)}
               <div className='absolute top-6 bg-white rounded-lg left-1/2 -translate-x-1/2 hidden flex-col group-hover:flex'>
                 {isAuthenticated && user ?
                   <>
                     <Link className='hover:bg-gray-200 text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Profile</Link>
                     <button onClick={() => dispatch(logout())} className='hover:bg-gray-200 text-center p-2 rounded-lg whitespace-nowrap'>Log out</button>
-                  </> :
+                  </> : location.pathname !== '/profile' && 
                   <>
                     <Link className='hover:bg-gray-200 text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Sign In</Link>
                     <Link className='hover:bg-gray-200 text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Sign Up</Link>
                   </>
+
                 }
               </div>
             </div>
