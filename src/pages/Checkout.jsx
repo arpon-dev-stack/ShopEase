@@ -13,8 +13,6 @@ const Checkout = () => {
 
   const handlePayment = (e) => {
     e.preventDefault();
-    // Logic to process credentials based on 'method'
-    console.log("Processing payment for:", product.name, "via", method);
     alert("Purchase Successful!");
     navigate('/success');
   };
