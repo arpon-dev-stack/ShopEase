@@ -13,7 +13,7 @@ const ProductCard = memo(({ product}) => {
       {/* Product Image */}
       <div className="relative h-72 overflow-hidden">
         <img
-          src={`${product.image.split('/')[1] === 'src' ? product.image : BASE_URL + product.image}`}
+          src={product.image}
           alt={product.name}
           className="min-w-full min-h-72 object-cover hover:scale-[1.001] transition-transform duration-300"
           loading='lazy'

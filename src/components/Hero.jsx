@@ -3,7 +3,7 @@ import {memo} from 'react'
 
 function Hero () {
     return (
-        <section className="bg-[url(src/assets/accessories.webp)] h-96 bg-center text-white p-8 md:p-12 flex items-end">
+        <section className="bg-[url(https://raw.githubusercontent.com/arpon-dev-stack/ShopEase/refs/heads/main/src/assets/accessories.webp)] h-96 bg-center text-white p-8 md:p-12 flex items-end">
             <div className="max-w-2xl">
                 <h1 className="text-4xl md:text-5xl font-bold mb-4">
                     Welcome to ShopEase
