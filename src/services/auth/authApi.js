@@ -1,11 +1,12 @@
-// services/authApi.js
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+const backend = import.meta.env.VITE_DEMOBACKEND;
 
 export const authApi = createApi({
   reducerPath: 'authApi',
-  baseQuery: fetchBaseQuery({ 
-    baseUrl: 'https://your-api.com/api',
-    prepareHeaders: (headers, {getState}) => {
+  baseQuery: fetchBaseQuery({
+    baseUrl: backend,
+    prepareHeaders: (headers, { getState }) => {
       const token = localStorage.getItem('token') || getState().auth.token;
       if (token) {
         headers.set('authorization', `Bearer ${token}`);
@@ -16,17 +17,22 @@ export const authApi = createApi({
   endpoints: (builder) => ({
     signIn: builder.mutation({
       query: (credentials) => ({
-        url: '/login',
+        url: '/user/login',
         method: 'POST',
         body: credentials,
       }),
     }),
     signUp: builder.mutation({
-      query: (userData) => ({
-        url: '/register',
-        method: 'POST',
-        body: userData,
-      }),
+      query: (userData) => {
+
+        console.log(userData)
+
+        return ({
+          url: '/user/register',
+          method: 'POST',
+          body: userData,
+        })
+      },
     }),
     verifyMe: builder.query({
       query: () => '/me', // This maps to GET https://your-api.com/api/me
@@ -34,8 +40,8 @@ export const authApi = createApi({
   }),
 });
 
-export const { 
-  useSignInMutation, 
-  useSignUpMutation, 
+export const {
+  useSignInMutation,
+  useSignUpMutation,
   useVerifyMeQuery // Export the new hook
 } = authApi;

@@ -8,27 +8,10 @@ export const productApi = createApi({
     endpoints: builder => ({
         getProducts: builder.query({
             query: (filter) => {
-                console.log(filter)
-                if (filter.category === 'all' && filter.maxPrice === 1000 && filter.sort === 'default' && filter.page === 0) {
-                    return '/products';
+                return {
+                    url: '/products',
+                    params: filter
                 }
-
-                const params = new URLSearchParams();
-                if (filter.category !== 'all') params.append('category', filter.category);
-                if (filter.maxPrice < 1000) params.append('price_lte', filter.maxPrice);
-
-                if (filter.sort === 'price-low') {
-                    params.append('_sort', 'price');
-                    params.append('_order', 'asc');
-                } else if (filter.sort === 'price-high') {
-                    params.append('_sort', 'price');
-                    params.append('_order', 'desc');
-                } else if (filter.sort === 'rating') {
-                    params.append('_sort', 'rating');
-                    params.append('_order', 'desc');
-                }
-
-                return `/products?${params.toString()}`;
             },
         })
     })

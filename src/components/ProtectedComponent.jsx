@@ -10,7 +10,7 @@ import { ChevronLeft } from 'lucide-react';
 
 function ProtectedComponent({ children }) {
     const dispatch = useDispatch();
-    const [formData, setFormData] = useState({ email: '', password: '', fullName: '' });
+    const [formData, setFormData] = useState({ email: '', password: '', name: '' });
     const navigate = useNavigate();
 
     // Check Redux state first
@@ -60,6 +60,8 @@ function ProtectedComponent({ children }) {
             const result = type === 'signin'
                 ? await signIn({ email: formData.email, password: formData.password }).unwrap()
                 : await signUp(formData).unwrap();
+
+                console.log(result)
 
             dispatch(setCredentials({ user: result.user, token: result.token }));
             toggleModal(type === 'signin' ? signInRef : signUpRef, 'close');
@@ -118,7 +120,7 @@ function ProtectedComponent({ children }) {
                     switchText="Already have an account? Sign In"
                     formSubmit={() => handleAuth('signup')}
                 >
-                    <AuthInput type="text" placeholder="Full Name" onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} />
+                    <AuthInput type="text" placeholder="Full Name" onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                     <AuthInput type="email" placeholder="Email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                     <AuthInput type="password" placeholder="Password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
                 </AuthModal>

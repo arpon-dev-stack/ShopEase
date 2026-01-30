@@ -19,7 +19,7 @@ const ProductList = () => {
 
   const filteredProducts = useMemo(() => {
     if (!data) return [];
-    return data.filter(p =>
+    return data.products.filter(p =>
       (filter.category === 'all' || p.category === filter.category) &&
       (p.price <= filter.maxPrice)
     );
@@ -37,7 +37,7 @@ const ProductList = () => {
         ) : isSuccess ? (
           <div className="grid grid-cols-1 mob:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
-              <ProductCard key={product.id} product={product} />
+              <ProductCard key={product._id} product={product} />
             ))}
           </div>
         ) : isError ||

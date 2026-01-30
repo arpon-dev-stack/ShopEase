@@ -27,9 +27,7 @@ const Header = () => {
   const mobNavRef = useRef(null);
 
   useEffect(() => {
-    console.log("hmm")
     const handleClickOutside = (event) => {
-      console.log("work")
       // Check if the click was outside the mobNavRef element
       if (mobNavRef.current && !mobNavRef.current.contains(event.target)) {
         setIsMenuOpen(false);

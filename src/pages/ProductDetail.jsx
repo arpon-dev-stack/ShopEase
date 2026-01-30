@@ -12,12 +12,10 @@ const DataDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {isAuthenticated} = useSelector(state => state.auth)
 
   const { data, isLoading, isError, isSuccess } = useGetProductByIdQuery(id);
   const [quantity, setQuantity] = useState(1);
 
-  // Memoize image URL to prevent recalculation on every render
   const imageUrl = useMemo(() =>
     data?.image ? `${BACKEND_URL}${data.image}` : '',
     [data?.image]);
