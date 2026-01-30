@@ -11,7 +11,7 @@ import { ChevronLeft } from 'lucide-react';
 function ProtectedComponent({ children }) {
     const dispatch = useDispatch();
     const [formData, setFormData] = useState({ email: '', password: '', fullName: '' });
-    const navigate = useNavigate()
+    const navigate = useNavigate();
 
     // Check Redux state first
     const { isAuthenticated, user: reduxUser } = useSelector((state) => state.auth);

@@ -10,6 +10,9 @@ export default {
         primary: '#3B82F6',
         secondary: '#1E40AF',
       },
+      screens: {
+        'mob': '500px'
+      }
     },
   },
   plugins: [],

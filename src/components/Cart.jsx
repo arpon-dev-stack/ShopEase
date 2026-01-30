@@ -43,7 +43,7 @@ const Cart = () => {
             {/* Product Image */}
             <div className="flex justify-start gap-x-2">
               <img
-                src={`${backend}${item.image}`}
+                src={item.image}
                 alt={item.name}
                 className="w-20 h-20 object-cover rounded"
                 loading='lazy'

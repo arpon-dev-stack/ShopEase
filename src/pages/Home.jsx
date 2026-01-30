@@ -17,7 +17,7 @@ const Home = () => {
       {/* <section className="bg-gradient-to-r from-primary to-secondary text-white rounded-2xl p-8 md:p-12"> */}
       <Hero />
       {/* Categories */}
-      <section className='mt-1'>
+      <section className='mt-3'>
         <h2 className="text-3xl font-bold mb-6">Shop by Category</h2>
         <div className="flex flex-wrap gap-3 mb-6">
           {[...categories].map((product, key) => (
@@ -38,13 +38,13 @@ const Home = () => {
       {/* Products Grid */}
       <section>
         <h2 className="text-3xl font-bold mb-6">Featured Products</h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 transition-all duration-1000">
+        <div className="grid grid-cols-1 mob:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 transition-all duration-1000">
           {filteredProducts.map(product => <ProductCard key={product.id} product={product}/>)}
         </div>
       </section>
 
       {/* Banner */}
-      <section className="bg-gray-100 rounded-2xl p-8 text-center">
+      <section className="bg-gray-100 rounded-2xl mt-4 p-8 text-center">
         <h2 className="text-3xl font-bold mb-4">Summer Sale!</h2>
         <p className="text-xl text-gray-600 mb-6">
           Up to 50% off on selected items. Limited time offer!
