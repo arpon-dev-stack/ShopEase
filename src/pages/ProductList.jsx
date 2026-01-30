@@ -7,27 +7,25 @@ import FilterBar from '../components/FilterBar';
 import useDebounce from '../utills/debouncer';
 
 const ProductList = () => {
+
   const [filter, setFilter] = useState({
     category: 'all',
     maxPrice: 1000,
-    minPrice: 0,
-    sort: 'default',
     page: 0
   });
 
   const debouncedFilter = useDebounce(filter, 500);
-  const data = useSelector(state => state.productBrif.items)
-
-  const { isError, isLoading, _, isSuccess, isFetching } = useGetProductsQuery(debouncedFilter);
+  const { isError, isLoading, data, isSuccess, isFetching } = useGetProductsQuery(debouncedFilter);
   const loaderRef = useRef();
   const categories = useSelector(state => state.productBrif.categories);
 
-  // 2. Optimized Observer logic
+  console.log(data)
+
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && !isFetching) {
-          setFilter({...filter, page: filter.page + 1})
+          // setFilter({...filter, page: filter.page + 1})
         }
       },
       { threshold: 0.1 }
@@ -39,9 +37,8 @@ const ProductList = () => {
     return () => {
       if (currentLoader) observer.unobserve(currentLoader);
     };
-  }, [!isFetching]); // Re-bind only when fetching status changes
+  }, [!isFetching]);
 
-  // 3. Derived State: Filter the data locally if the API doesn't do it
   const filteredProducts = useMemo(() => {
     if (!data) return [];
     return data.filter(p =>
@@ -51,16 +48,16 @@ const ProductList = () => {
   }, [data, filter]);
 
   return (
-    <div className="flex flex-col gap-4">
+    <div className="flex flex-col gap-4 max-w-full">
       <FilterBar filter={filter} setFilter={setFilter} categories={categories} />
 
       <div className="w-full min-h-[700px]">
         {isLoading || isFetching ? ( // Change this line
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 mob:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {[...Array(6)].map((_, i) => <ProductCardSkeleton key={i} />)}
           </div>
         ) : isSuccess ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid grid-cols-1 mob:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {filteredProducts.map((product) => (
               <ProductCard key={product.id} product={product} />
             ))}

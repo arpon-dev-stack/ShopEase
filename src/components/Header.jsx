@@ -1,4 +1,4 @@
-import React, { useState, useRef, useCallback, useMemo } from 'react';
+import React, { useEffect, useState, useRef, useCallback, useMemo } from 'react';
 import { NavLink, Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Search, Menu, X } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
@@ -24,13 +24,34 @@ const Header = () => {
   const dispatch = useDispatch()
   const { isAuthenticated, user } = useSelector((state) => state.auth);
   const location = useLocation();
+  const mobNavRef = useRef(null);
+
+  useEffect(() => {
+    console.log("hmm")
+    const handleClickOutside = (event) => {
+      console.log("work")
+      // Check if the click was outside the mobNavRef element
+      if (mobNavRef.current && !mobNavRef.current.contains(event.target)) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    if (isMenuOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    // Cleanup listener when component unmounts or modal closes
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [isMenuOpen]);
 
   const totalQuantity = selectTotalQuantity(cart);
 
   return (
-    <header className="bg-white shadow-md sticky top-0 z-50 min-w-[280px]">
-      <div className="container mx-auto px-4">
-        <div className="flex items-center justify-between gap-4 h-16">
+    <header className="bg-white shadow-md sticky top-0 z-50 max-w-[1600px] mx-auto w-full sm:px-4 h-16">
+      <div className=" mx-auto px-4 h-full relative">
+        <div className="flex items-center justify-between gap-4 h-full">
           {/* Logo */}
           <Link to="/" className="text-2xl font-bold text-primary shrink-0">
             ShopEase
@@ -43,58 +64,15 @@ const Header = () => {
                   type="text"
                   placeholder="Search products..."
                   className="w-full px-4 py-2 border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-primary/50 transition-all"
-                  value={query}
-                  onFocus={() => setShowSuggestions(true)}
-                  // Timeout allows the onClick of a suggestion to fire before the div vanishes
-                  onBlur={() => setTimeout(() => setShowSuggestions(false), 200)}
-                  onChange={(e) => setQuery(e.target.value)}
                 />
                 <div className="absolute right-3 flex items-center gap-2">
-                  {isFetching && <div className="w-4 h-4 border-2 border-primary border-t-transparent rounded-full animate-spin" />}
                   <Search className="text-gray-400 w-5 h-5 group-focus-within:text-primary transition-colors" />
                 </div>
               </div>
 
               {/* Suggestions Dropdown */}
-              {query.length > 0 && (
-                <div className="absolute top-full left-0 w-full bg-white border border-gray-100 mt-1 rounded-lg shadow-xl z-[60] overflow-hidden">
-                  {suggestions.length > 0 ? (
-                    suggestions.map((product) => {
-                      // Split name into parts to highlight the matching "sentence"
-                      const parts = product.name.split(new RegExp(`(${query})`, 'gi'));
-
-                      return (
-                        <Link
-                          key={product.id}
-                          to={`/product/${product.id}`}
-                          className="flex items-center gap-3 px-4 py-3 hover:bg-blue-50/50 border-b border-gray-50 last:border-none transition-colors group"
-                          onClick={() => {
-                            setQuery(product.name);
-                            setShowSuggestions(false);
-                          }}
-                        >
-                          <Search className="w-4 h-4 text-gray-300 group-hover:text-primary shrink-0" />
-                          <span className="text-sm text-gray-700 truncate">
-                            {parts.map((part, i) =>
-                              part.toLowerCase() === query.toLowerCase() ? (
-                                <strong key={i} className="text-primary font-bold">{part}</strong>
-                              ) : (
-                                part
-                              )
-                            )}
-                          </span>
-                        </Link>
-                      );
-                    })
-                  ) : (
-                    !isFetching && (
-                      <div className="px-4 py-4 text-sm text-gray-400 text-center italic">
-                        No matches for "{query}"
-                      </div>
-                    )
-                  )}
-                </div>
-              )}
+              <div className="absolute hidden top-full left-0 w-full bg-white border border-gray-100 mt-1 rounded-lg shadow-xl z-[60] overflow-hidden">
+              </div>
             </div>
           </div>
 
@@ -130,12 +108,12 @@ const Header = () => {
               <div className='absolute top-6 bg-white rounded-lg left-1/2 -translate-x-1/2 hidden flex-col group-hover:flex'>
                 {isAuthenticated && user ?
                   <>
-                    <Link className='hover:bg-gray-200 text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Profile</Link>
-                    <button onClick={() => dispatch(logout())} className='hover:bg-gray-200 text-center p-2 rounded-lg whitespace-nowrap'>Log out</button>
-                  </> : location.pathname !== '/profile' && 
+                    <Link className='hover:bg-primary text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Profile</Link>
+                    <button onClick={() => dispatch(logout())} className='text-center p-2 rounded-lg whitespace-nowrap bg-red-100 hover:bg-red-300'>Log out</button>
+                  </> : location.pathname !== '/profile' &&
                   <>
-                    <Link className='hover:bg-gray-200 text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Sign In</Link>
-                    <Link className='hover:bg-gray-200 text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Sign Up</Link>
+                    <Link className='hover:bg-primary hover:text-white font-semibold text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Sign In</Link>
+                    <Link className='hover:bg-primary hover:text-white font-semibold text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Sign Up</Link>
                   </>
 
                 }
@@ -155,66 +133,30 @@ const Header = () => {
 
         {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 border-t border-gray-100 animate-in slide-in-from-top duration-200">
-            <div className="relative mb-4">
+          <div className="md:hidden py-4 px-4 border-t border-gray-100 bg-white w-full left-0 top-16 transition-all duration-1000 absolute" ref={mobNavRef}>
+            <div className="relative h-11">
               <input
                 type="text"
                 placeholder="Search..."
-                className="w-full px-4 py-2 bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-primary"
-                // value={searchQuery}
-                // onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full px-4 h-full bg-gray-50 border-none rounded-lg focus:ring-2 focus:ring-primary"
               />
-              <Search className="absolute right-3 top-2.5 text-gray-400 w-5 h-5" />
+              <Search className="absolute text-gray-400 w-5 h-5 right-2 top-1/2 -translate-y-1/2" />
             </div>
 
-            <div className="flex flex-col gap-1">
+            <div className="flex flex-col mt-2 gap-1">
               {NAV_LINKS.map((link) => (
                 <Link
                   key={link.path}
                   to={link.path}
                   className="px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium"
-                  onClick={() => setIsMenuOpen(false)}
                 >
                   {link.name}
                 </Link>
               ))}
-              {/* <button
-                className="btn-primary mt-4 w-full py-3"
-                onClick={() => { setIsMenuOpen(false); toggleModal(signInRef, 'open'); }}
-              >
-                Sign In
-              </button> */}
             </div>
           </div>
         )}
       </div>
-
-      {/* Auth Modals */}
-      {/* <AuthModal
-        dialogRef={signInRef}
-        title="Sign In"
-        onClose={() => toggleModal(signInRef, 'close')}
-        switchModal={() => toggleModal(signUpRef, 'open')}
-        switchText="Don't have an account? Sign Up"
-        formSubmit={() => handleAuth('signin')}
-      >
-        <AuthInput type="email" placeholder="Email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-        <AuthInput type="password" placeholder="Password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-      </AuthModal>
-
-      <AuthModal
-        dialogRef={signUpRef}
-        title="Create Account"
-        onClose={() => toggleModal(signUpRef, 'close')}
-        switchModal={() => toggleModal(signInRef, 'open')}
-        switchText="Already have an account? Sign In"
-        formSubmit={() => handleAuth('signup')}
-      >
-        <AuthInput type="text" placeholder="Full Name" onChange={(e) => setFormData({ ...formData, fullName: e.target.value })} />
-        <AuthInput type="email" placeholder="Email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-        <AuthInput type="password" placeholder="Password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-        <AuthInput type="password" placeholder="Confirm Password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-      </AuthModal> */}
     </header>
   );
 };
