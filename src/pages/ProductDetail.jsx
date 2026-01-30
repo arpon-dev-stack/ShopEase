@@ -12,12 +12,10 @@ const DataDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const {isAuthenticated} = useSelector(state => state.auth)
 
   const { data, isLoading, isError, isSuccess } = useGetProductByIdQuery(id);
   const [quantity, setQuantity] = useState(1);
 
-  // Memoize image URL to prevent recalculation on every render
   const imageUrl = useMemo(() =>
     data?.image ? `${BACKEND_URL}${data.image}` : '',
     [data?.image]);
@@ -53,9 +51,9 @@ const DataDetail = () => {
             <div className="lg:w-1/2">
               <div className="sticky top-6">
                 <img
-                  src={imageUrl}
+                  src={data.image}
                   alt={data.name}
-                  className="w-full aspect-square object-cover rounded-xl shadow-inner"
+                  className="w-full aspect-square h-48 mob:h-72 sm:h-[370px] md:h-[400px] lg:h-[450px] object-cover rounded-xl shadow-inner"
                   loading="eager"
                 />
               </div>

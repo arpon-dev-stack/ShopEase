@@ -1,8 +1,6 @@
-import React from 'react';
-import { addToCart, decrementQuantity, removeFromCart } from '../features/cart/cartSlice';
 import { useDispatch, useSelector } from 'react-redux';
-import { Trash2, Plus, Minus } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
+import CartDetail from './CartDetail';
 
 const backend = import.meta.env.VITE_DEMOBACKEND
 const Cart = () => {
@@ -33,64 +31,16 @@ const Cart = () => {
   }
 
   return (
-    <div className="bg-white rounded-lg shadow-md sm:p-6">
+    <div className="bg-white rounded-lg shadow-md p-4 sm:p-6">
       <h2 className="text-2xl font-bold text-gray-800 mb-6">Shopping Cart</h2>
 
       {/* Cart Items */}
       <div className="">
-        {cartItems.items.map((item) => (
-          <div key={item.id} className="border-b grid grid-cols-2">
-            {/* Product Image */}
-            <div className="flex justify-start gap-x-2">
-              <img
-                src={item.image}
-                alt={item.name}
-                className="w-20 h-20 object-cover rounded"
-                loading='lazy'
-              />
-              <div className="">
-                <h3 className="font-semibold capitalize text-gray-800">{item.name}</h3>
-                <p className="text-gray-600 text-sm capitalize">{item.category}</p>
-                <p className="text-primary font-bold">${item.price}</p>
-              </div>
-            </div>
-
-            {/* Product Info */}
-
-            <div className="flex justify-end p-2 gap-2">
-              <div className="flex items-center rounded-lg">
-                <button
-                  onClick={() => dispatch(decrementQuantity(item))}
-                  className="px-4 py-2 hover:bg-gray-100"
-                >
-                  -
-                </button>
-                <span className="px-4 py-2 w-12 text-center">{item.quantity}</span>
-                <button
-                  onClick={() => dispatch(addToCart(item))}
-                  className="px-4 py-2 hover:bg-gray-100"
-                >
-                  +
-                </button>
-              </div>
-              <div className="text-right col-span-1 w-20 flex flex-col justify-center items-center">
-                <p className="font-bold text-gray-800 mb-2">
-                  ${(item.price * item.quantity).toFixed(2)}
-                </p>
-                <button
-                  onClick={() => { dispatch(removeFromCart(item)) }}
-                  className="text-red-500 hover:text-red-700"
-                >
-                  <Trash2 className="w-7 h-7" />
-                </button>
-              </div>
-            </div>
-          </div>
-        ))}
+        {cartItems.items.map((item, indx) => <CartDetail key={indx} item={item}/>)}
       </div>
 
       {/* Cart Summary */}
-      <div className="mt-8 pt-6 border-t">
+      <div className="mt-1 pt-6">
         <div className="flex justify-between items-center mb-4">
           <span className="text-gray-600">Subtotal</span>
           <span className="font-bold">${calculateTotal().toFixed(2)}</span>

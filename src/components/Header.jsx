@@ -4,7 +4,7 @@ import { ShoppingCart, Search, Menu, X } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectTotalQuantity } from '../utills/filter';
 import { useProductNameQuery } from '../services/products/queryProduct';
-import useDebounce from '../utills/debouncer';
+import useDebounce from '../hooks/useDebouncer';
 import { CircleUserRound } from 'lucide-react';
 import { logout } from '../services/auth/authSlice';
 
@@ -27,9 +27,7 @@ const Header = () => {
   const mobNavRef = useRef(null);
 
   useEffect(() => {
-    console.log("hmm")
     const handleClickOutside = (event) => {
-      console.log("work")
       // Check if the click was outside the mobNavRef element
       if (mobNavRef.current && !mobNavRef.current.contains(event.target)) {
         setIsMenuOpen(false);
