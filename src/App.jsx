@@ -16,9 +16,9 @@ function App() {
 
   return (
     <Router>
-      <div className="min-w-[280px] max-w-[1400px] mx-auto flex flex-col">
+      <div className="min-w-[280px] max-w-[1600px] mx-auto flex flex-col">
         <Header />
-        <main className="w-full flex-1 mx-auto px-4 py-5 z-30 shrink-0">
+        <main className="w-full max-w-[1400px] flex-1 mx-auto px-4 py-5 z-30 shrink-0">
           <ScrollToTop>
             <Routes>
               <Route path="/" element={<Home />} />

@@ -71,7 +71,7 @@ const Header = () => {
               </div>
 
               {/* Suggestions Dropdown */}
-              <div className="absolute top-full left-0 w-full bg-white border border-gray-100 mt-1 rounded-lg shadow-xl z-[60] overflow-hidden">
+              <div className="absolute hidden top-full left-0 w-full bg-white border border-gray-100 mt-1 rounded-lg shadow-xl z-[60] overflow-hidden">
               </div>
             </div>
           </div>
@@ -133,7 +133,7 @@ const Header = () => {
 
         {/* Mobile Menu Dropdown */}
         {isMenuOpen && (
-          <div className="md:hidden py-4 px-4 border-t border-gray-100 bg-white w-full left-0 top-16 animate-in slide-in-from-top duration-200 absolute" ref={mobNavRef}>
+          <div className="md:hidden py-4 px-4 border-t border-gray-100 bg-white w-full left-0 top-16 transition-all duration-1000 absolute" ref={mobNavRef}>
             <div className="relative h-11">
               <input
                 type="text"
@@ -149,7 +149,6 @@ const Header = () => {
                   key={link.path}
                   to={link.path}
                   className="px-4 py-3 text-gray-700 hover:bg-gray-50 rounded-lg font-medium"
-                  onClick={() => setIsMenuOpen(false)}
                 >
                   {link.name}
                 </Link>
