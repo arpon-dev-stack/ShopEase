@@ -1,180 +1,147 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { Star, Truck, Shield, RefreshCw, ChevronLeft } from 'lucide-react';
-import { products } from '../data';
+import { Star, Truck, Shield, RefreshCw, ChevronLeft, Loader2 } from 'lucide-react';
+import { useDispatch, useSelector } from 'react-redux';
+import { addToCart } from '../features/cart/cartSlice';
+import { useGetProductByIdQuery } from '../services/products/productDetail';
+import ProductCardSkeleton from '../components/ProductCardSkeliton';
+import Badge from '../components/Badge';
+const BACKEND_URL = import.meta.env.VITE_DEMOBACKEND;
 
-const ProductDetail = ({ onAddToCart }) => {
+const DataDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const {isAuthenticated} = useSelector(state => state.auth)
+
+  const { data, isLoading, isError, isSuccess } = useGetProductByIdQuery(id);
   const [quantity, setQuantity] = useState(1);
-  const [selectedImage, setSelectedImage] = useState(0);
 
-  const product = products.find(p => p.id === parseInt(id));
+  // Memoize image URL to prevent recalculation on every render
+  const imageUrl = useMemo(() =>
+    data?.image ? `${BACKEND_URL}${data.image}` : '',
+    [data?.image]);
 
-  if (!product) {
-    return (
-      <div className="text-center py-12">
-        <h2 className="text-2xl font-bold text-gray-600 mb-4">Product not found</h2>
-        <button
-          onClick={() => navigate('/products')}
-          className="btn-primary"
-        >
-          Back to Products
-        </button>
-      </div>
-    );
+  const handleAddToCart = () => {
+    if (data) {
+      dispatch(addToCart({ ...data, quantity }));
+    }
+  };
+
+  // Guard for decrementing quantity
+  const updateQuantity = (val) => {
+    setQuantity(prev => Math.max(1, prev + val));
+  };
+
+  const handleBuyNow = () => {
+      navigate('/checkout', {state: {...data, quantity}})
   }
 
-  const relatedProducts = products
-    .filter(p => p.category === product.category && p.id !== product.id)
-    .slice(0, 4);
-
   return (
-    <div className="space-y-12">
-      {/* Back Button */}
+    <div className="space-y-8 max-w-7xl mx-auto px-4">
       <button
         onClick={() => navigate(-1)}
-        className="flex items-center text-gray-600 hover:text-primary transition"
+        className="flex items-center text-gray-600 hover:text-primary transition-colors group"
       >
-        <ChevronLeft className="w-5 h-5 mr-1" />
+        <ChevronLeft className="w-5 h-5 mr-1 group-hover:-translate-x-1 transition-transform" />
         Back
       </button>
-
-      {/* Product Details */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* Product Images */}
-          <div className="lg:w-1/2">
-            <div className="mb-4">
-              <img
-                src={product.image}
-                alt={product.name}
-                className="w-full h-96 object-cover rounded-lg"
-              />
-            </div>
-          </div>
-
-          {/* Product Info */}
-          <div className="lg:w-1/2">
-            <h1 className="text-3xl font-bold mb-4">{product.name}</h1>
-            
-            <div className="flex items-center mb-4">
-              <div className="flex items-center mr-4">
-                {[...Array(5)].map((_, i) => (
-                  <Star
-                    key={i}
-                    className={`w-5 h-5 ${
-                      i < Math.floor(product.rating)
-                        ? 'text-yellow-400 fill-yellow-400'
-                        : 'text-gray-300'
-                    }`}
-                  />
-                ))}
-              </div>
-              <span className="text-gray-600">
-                {product.rating} • {product.reviews} reviews
-              </span>
-              <span className="ml-4 px-2 py-1 bg-primary text-white text-sm rounded">
-                {product.category}
-              </span>
-            </div>
-
-            <p className="text-gray-600 mb-6">{product.description}</p>
-
-            <div className="text-4xl font-bold text-primary mb-6">
-              ${product.price}
-            </div>
-
-            {/* Quantity Selector */}
-            <div className="flex items-center mb-6">
-              <span className="mr-4 font-medium">Quantity:</span>
-              <div className="flex items-center border rounded-lg">
-                <button
-                  onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                  className="px-4 py-2 hover:bg-gray-100"
-                >
-                  -
-                </button>
-                <span className="px-4 py-2 w-12 text-center">{quantity}</span>
-                <button
-                  onClick={() => setQuantity(quantity + 1)}
-                  className="px-4 py-2 hover:bg-gray-100"
-                >
-                  +
-                </button>
-              </div>
-            </div>
-
-            {/* Action Buttons */}
-            <div className="flex space-x-4 mb-8">
-              <button
-                onClick={() => onAddToCart({ ...product, quantity })}
-                className="btn-primary flex-1 py-3 text-lg"
-              >
-                Add to Cart
-              </button>
-              <button className="btn-secondary flex-1 py-3 text-lg">
-                Buy Now
-              </button>
-            </div>
-
-            {/* Features */}
-            <div className="grid grid-cols-2 gap-4">
-              <div className="flex items-center">
-                <Truck className="w-6 h-6 text-primary mr-3" />
-                <div>
-                  <div className="font-medium">Free Shipping</div>
-                  <div className="text-sm text-gray-600">Over $50</div>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <Shield className="w-6 h-6 text-primary mr-3" />
-                <div>
-                  <div className="font-medium">2-Year Warranty</div>
-                  <div className="text-sm text-gray-600">Guarantee</div>
-                </div>
-              </div>
-              <div className="flex items-center">
-                <RefreshCw className="w-6 h-6 text-primary mr-3" />
-                <div>
-                  <div className="font-medium">Easy Returns</div>
-                  <div className="text-sm text-gray-600">30 Days</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Related Products */}
-      {relatedProducts.length > 0 && (
-        <div>
-          <h2 className="text-2xl font-bold mb-6">Related Products</h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-            {relatedProducts.map((relatedProduct) => (
-              <div key={relatedProduct.id} className="bg-white rounded-lg shadow-md p-4">
+      {isSuccess ?
+        (<div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 lg:p-10">
+          <div className="flex flex-col lg:flex-row gap-12">
+            {/* Image Section */}
+            <div className="lg:w-1/2">
+              <div className="sticky top-6">
                 <img
-                  src={relatedProduct.image}
-                  alt={relatedProduct.name}
-                  className="w-full h-40 object-cover rounded mb-4"
+                  src={imageUrl}
+                  alt={data.name}
+                  className="w-full aspect-square object-cover rounded-xl shadow-inner"
+                  loading="eager"
                 />
-                <h3 className="font-semibold mb-2">{relatedProduct.name}</h3>
-                <div className="flex justify-between items-center">
-                  <span className="text-primary font-bold">${relatedProduct.price}</span>
+              </div>
+            </div>
+
+            {/* Info Section */}
+            <div className="lg:w-1/2 flex flex-col">
+              <div className="mb-2">
+                <span className="px-3 py-1 bg-blue-50 text-primary text-xs font-bold uppercase tracking-wider rounded-full">
+                  {data.category}
+                </span>
+              </div>
+
+              <h1 className="text-4xl font-extrabold text-gray-900 mb-4 capitalize">{data.name}</h1>
+
+              <div className="flex items-center mb-6">
+                <div className="flex items-center mr-3">
+                  {[...Array(5)].map((_, i) => (
+                    <Star
+                      key={i}
+                      className={`w-5 h-5 ${i < Math.floor(data.rating) ? 'text-yellow-400 fill-yellow-400' : 'text-gray-200'}`}
+                    />
+                  ))}
+                </div>
+                <span className="text-gray-600 font-medium">
+                  {data.rating} <span className="text-gray-400 mx-1">•</span> {data.reviews} reviews
+                </span>
+              </div>
+
+              <p className="text-gray-600 text-lg leading-relaxed mb-8 capitalize">{data.description}</p>
+
+              <div className="text-5xl font-bold text-gray-900 mb-8">
+                ${data.price.toLocaleString()}
+              </div>
+
+              {/* Quantity & Actions */}
+              <div className="space-y-6 mb-10">
+                <div className="flex items-center">
+                  <span className="mr-6 font-semibold text-gray-700">Quantity</span>
+                  <div className="flex items-center border-2 border-gray-100 rounded-xl overflow-hidden">
+                    <button
+                      onClick={() => updateQuantity(-1)}
+                      className="px-5 py-3 hover:bg-gray-50 transition-colors font-bold"
+                    >-</button>
+                    <span className="px-6 py-3 bg-white min-w-[60px] text-center font-bold text-lg">{quantity}</span>
+                    <button
+                      onClick={() => updateQuantity(1)}
+                      className="px-5 py-3 hover:bg-gray-50 transition-colors font-bold"
+                    >+</button>
+                  </div>
+                </div>
+
+                <div className="flex gap-4">
                   <button
-                    onClick={() => onAddToCart(relatedProduct)}
-                    className="btn-primary text-sm px-3 py-1"
+                    onClick={handleAddToCart}
+                    className="bg-primary hover:bg-primary/90 text-white flex-1 py-4 rounded-xl font-bold text-lg transition-all active:scale-95 shadow-lg shadow-primary/20"
                   >
-                    Add
+                    Add to Cart
+                  </button>
+                  <button className="border-2 border-gray-200 hover:border-gray-800 flex-1 py-4 rounded-xl font-bold text-lg transition-all" onClick={handleBuyNow}>
+                    Buy Now
                   </button>
                 </div>
               </div>
-            ))}
+
+              {/* Trust Badges */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-gray-100">
+                <Badge icon={<Truck />} title="Free Shipping" sub="Over $50" />
+                <Badge icon={<Shield />} title="2-Year Warranty" sub="Guaranteed" />
+                <Badge icon={<RefreshCw />} title="Easy Returns" sub="30 Days" />
+              </div>
+            </div>
           </div>
-        </div>
-      )}
+        </div>) : isLoading ? (
+          <ProductCardSkeleton />
+        ) : (
+          <div className="text-center py-24">
+            <h2 className="text-2xl font-bold text-gray-800 mb-4">Product not found</h2>
+            <button onClick={() => navigate(-1)} className="btn-primary">
+              Go Back
+            </button>
+          </div>
+        )}
     </div>
   );
 };
 
-export default ProductDetail;
+
+export default DataDetail;
