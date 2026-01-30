@@ -4,7 +4,7 @@ import { ShoppingCart, Search, Menu, X } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectTotalQuantity } from '../utills/filter';
 import { useProductNameQuery } from '../services/products/queryProduct';
-import useDebounce from '../utills/debouncer';
+import useDebounce from '../hooks/useDebouncer';
 import { CircleUserRound } from 'lucide-react';
 import { logout } from '../services/auth/authSlice';
 
