@@ -17,25 +17,22 @@ function ProtectedComponent({ children }) {
     const { isAuthenticated, user: reduxUser } = useSelector((state) => state.auth);
     const token = localStorage.getItem('token');
 
-    // FIX: Skip should be true if there is NO token.
-    const { data: user, isLoading, isSuccess, isError } = useVerifyMeQuery(undefined, {
+    const { data: user, isLoading, isSuccess, isError } = useVerifyMeQuery(reduxUser, {
         skip: !token
     });
 
     const signInRef = useRef();
     const signUpRef = useRef();
 
-    // Sync Query result with Redux
     useEffect(() => {
         if (isSuccess && user) {
             dispatch(setCredentials({ user, token }));
         } else if (isError) {
             dispatch(logout());
-            signInRef.current?.showModal(); // Auto-open login if token fails
+            // signInRef.current?.showModal();
         }
     }, [isSuccess, isError, user, token, dispatch]);
 
-    // Open login modal on mount if no token exists at all
     useEffect(() => {
         if (!token) {
             signInRef.current?.showModal();
@@ -52,16 +49,14 @@ function ProtectedComponent({ children }) {
         }
     }, []);
 
-    const [signIn, { isLoading: isLoggingIn }] = useSignInMutation();
-    const [signUp, { isLoading: isRegistering }] = useSignUpMutation();
+    const [signIn, { isLoading: isLoggingIn, isError: isLogInError }] = useSignInMutation();
+    const [signUp, { isLoading: isRegistering, isError: isRegisterError }] = useSignUpMutation();
 
     const handleAuth = async (type) => {
         try {
             const result = type === 'signin'
                 ? await signIn({ email: formData.email, password: formData.password }).unwrap()
                 : await signUp(formData).unwrap();
-
-                console.log(result)
 
             dispatch(setCredentials({ user: result.user, token: result.token }));
             toggleModal(type === 'signin' ? signInRef : signUpRef, 'close');
@@ -70,17 +65,14 @@ function ProtectedComponent({ children }) {
         }
     };
 
-    // 1. Show nothing or a skeleton while checking the token
     if (isLoading && token) {
         return <div className="p-10 text-center">Verifying session...</div>;
     }
 
-    // 2. If authenticated, show protected content
     if (isAuthenticated || (isSuccess && user)) {
         return children;
     }
 
-    // 3. If not authenticated, show the fallback UI with Modals
     return (
         <>
             <button
@@ -107,6 +99,8 @@ function ProtectedComponent({ children }) {
                     switchModal={() => toggleModal(signUpRef, 'open')}
                     switchText="Don't have an account? Sign Up"
                     formSubmit={() => handleAuth('signin')}
+                    formSubmitting={isLoggingIn}
+                    formSumitError={isLogInError}
                 >
                     <AuthInput type="email" placeholder="Email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
                     <AuthInput type="password" placeholder="Password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
@@ -119,6 +113,8 @@ function ProtectedComponent({ children }) {
                     switchModal={() => toggleModal(signInRef, 'open')}
                     switchText="Already have an account? Sign In"
                     formSubmit={() => handleAuth('signup')}
+                    formSubmitting={isRegistering}
+                    formSumitError={isRegisterError}
                 >
                     <AuthInput type="text" placeholder="Full Name" onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
                     <AuthInput type="email" placeholder="Email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />

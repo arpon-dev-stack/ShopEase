@@ -12,8 +12,8 @@ export const productName = createApi({
                     params.append('name', param)
                     return `products?${params.toString()}`
                 }  
-            })
-    })
+            }),
+    }),
 })
 
 export const {useProductNameQuery} = productName;

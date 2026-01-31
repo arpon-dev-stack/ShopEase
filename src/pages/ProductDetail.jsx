@@ -9,7 +9,10 @@ import Badge from '../components/Badge';
 const BACKEND_URL = import.meta.env.VITE_DEMOBACKEND;
 
 const DataDetail = () => {
-  const { id } = useParams();
+  const {id} = useParams();
+
+  console.log(id);
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 

@@ -11,6 +11,7 @@ import ScrollToTop from './components/ScrollToTop';
 import Profile from './pages/Profile';
 import ProtectedComponent from './components/ProtectedComponent';
 import Checkout from './pages/Checkout';
+import SignInPage from './pages/SignInPage';
 
 function App() {
 
@@ -23,7 +24,7 @@ function App() {
             <Routes>
               <Route path="/" element={<Home />} />
               <Route path="/products" element={<ProductList />} />
-              <Route path="/product/:id" element={<ProductDetail />} />
+              <Route path="/products/:id" element={<ProductDetail />} />
               <Route path="/cart" element={<CartPage />} />
               <Route path='/categories' element={<Categorie />} />
               <Route path='/deals' element={<Deal />} />

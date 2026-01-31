@@ -25,8 +25,6 @@ export const authApi = createApi({
     signUp: builder.mutation({
       query: (userData) => {
 
-        console.log(userData)
-
         return ({
           url: '/user/register',
           method: 'POST',
@@ -35,7 +33,13 @@ export const authApi = createApi({
       },
     }),
     verifyMe: builder.query({
-      query: () => '/me', // This maps to GET https://your-api.com/api/me
+      query: (userData) => {
+        return { 
+          url: '/user/verify',
+          method: 'POST',
+          body: userData
+        }
+      }
     }),
   }),
 });

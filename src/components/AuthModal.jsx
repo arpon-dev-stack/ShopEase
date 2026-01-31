@@ -1,6 +1,6 @@
 import { X } from "lucide-react";
 
-const AuthModal = ({ dialogRef, title, children, onClose, switchModal, switchText, formSubmit }) => {
+const AuthModal = ({ dialogRef, title, children, onClose, switchModal, switchText, formSubmit, formSubmitting, formSumitError }) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -25,7 +25,7 @@ const AuthModal = ({ dialogRef, title, children, onClose, switchModal, switchTex
                         onClick={switchModal}
                         className="text-sm text-gray-500 hover:text-primary transition-colors text-center mt-2"
                     >
-                        {switchText}
+                        {!formSubmitting && !formSumitError ? switchText : formSubmitting ? "Submitting..." : "Error"}
                     </button>
                 </form>
             </div>
