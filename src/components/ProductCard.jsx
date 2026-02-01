@@ -57,7 +57,7 @@ const ProductCard = memo(({ product }) => {
 
         <div className="flex items-center justify-end gap-4 mt-2">
           <Link
-            to={`/product/${product.id}`}
+            to={`/products/${product._id}`}
             className="btn-secondary text-sm px-3 py-2"
           >
             View

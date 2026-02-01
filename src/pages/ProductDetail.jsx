@@ -10,6 +10,8 @@ const BACKEND_URL = import.meta.env.VITE_DEMOBACKEND;
 
 const DataDetail = () => {
   const { id } = useParams();
+  const { isAuthenticated, user, token } = useSelector(state => state.auth)
+
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -32,7 +34,9 @@ const DataDetail = () => {
   };
 
   const handleBuyNow = () => {
-      navigate('/checkout', {state: {...data, quantity}})
+    if (isAuthenticated) {
+      navigate('/checkout', { state: { ...data, quantity } })
+    }
   }
 
   return (

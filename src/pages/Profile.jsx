@@ -1,5 +1,4 @@
 import { CircleUserRound } from 'lucide-react';
-import { logout } from '../services/auth/authSlice';
 import { useDispatch } from 'react-redux';
 
 function Profile() {
