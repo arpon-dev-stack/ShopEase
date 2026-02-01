@@ -3,10 +3,9 @@ import { NavLink, Link, useLocation } from 'react-router-dom';
 import { ShoppingCart, Search, Menu, X } from 'lucide-react';
 import { useSelector, useDispatch } from 'react-redux';
 import { selectTotalQuantity } from '../utills/filter';
-import { useProductNameQuery } from '../services/products/queryProduct';
-import useDebounce from '../hooks/useDebouncer';
 import { CircleUserRound } from 'lucide-react';
-import { logout } from '../services/auth/authSlice';
+import { setPopup } from '../services/auth/authSlice';
+import { signupUser, signinUser, signoutUser } from '../services/auth/authApi';
 
 const NAV_LINKS = [
   { name: 'Home', path: '/' },
@@ -18,17 +17,13 @@ const NAV_LINKS = [
 const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const cart = useSelector(state => state.cart.items);
-  const [query, setQuery] = useState('')
-  const debounceQuery = useDebounce(query, 300); // 300ms is standard; 5000ms is too slow
-  const { data, isSuccess, isFetching } = useProductNameQuery(debounceQuery);
   const dispatch = useDispatch()
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
   const location = useLocation();
   const mobNavRef = useRef(null);
+  const { isAuthenticated, user, popup } = useSelector(state => state.user)
 
   useEffect(() => {
     const handleClickOutside = (event) => {
-      // Check if the click was outside the mobNavRef element
       if (mobNavRef.current && !mobNavRef.current.contains(event.target)) {
         setIsMenuOpen(false);
       }
@@ -45,6 +40,17 @@ const Header = () => {
   }, [isMenuOpen]);
 
   const totalQuantity = selectTotalQuantity(cart);
+
+  const handlesignin = () => {
+    dispatch(setPopup('signin'))
+  }
+  const handleSignup = () => {
+    dispatch(setPopup('signup'))
+  }
+  const handleSignOut = () => {
+    dispatch(signoutUser(user));
+  }
+
 
   return (
     <header className="bg-white shadow-md sticky top-0 z-50 max-w-[1600px] mx-auto w-full sm:px-4 h-16">
@@ -106,14 +112,14 @@ const Header = () => {
               <div className='absolute top-6 bg-white rounded-lg left-1/2 -translate-x-1/2 hidden flex-col group-hover:flex'>
                 {isAuthenticated && user ?
                   <>
-                    <Link className='hover:bg-primary text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Profile</Link>
-                    <button onClick={() => dispatch(logout())} className='text-center p-2 rounded-lg whitespace-nowrap bg-red-100 hover:bg-red-300'>Log out</button>
-                  </> : location.pathname !== '/profile' &&
-                  <>
-                    <Link className='hover:bg-primary hover:text-white font-semibold text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Sign In</Link>
-                    <Link className='hover:bg-primary hover:text-white font-semibold text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Sign Up</Link>
+                    <Link to="/profile" className='hover:bg-primary text-center p-2 rounded-lg whitespace-nowrap'>Profile</Link>
+                    <button onClick={handleSignOut} className='text-center p-2 rounded-lg whitespace-nowrap bg-red-100 hover:bg-red-300'>Log out</button>
                   </>
-
+                  :
+                  <>
+                    <button onClick={handlesignin} className='hover:bg-primary hover:text-white font-semibold text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Sign In</button>
+                    <button onClick={handleSignup} className='hover:bg-primary hover:text-white font-semibold text-center p-2 rounded-lg whitespace-nowrap' to='/profile'>Sign Up</button>
+                  </>
                 }
               </div>
             </div>

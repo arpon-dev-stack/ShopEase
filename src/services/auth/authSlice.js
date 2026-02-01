@@ -1,24 +1,39 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { signoutUser, signupUser } from './authApi';
 
 const authSlice = createSlice({
-  name: 'auth',
-  initialState: { user: null, token: null, isAuthenticated: false },
+  name: 'user',
+  initialState: { user: null, status: null, token: null, isAuthenticated: false, popup: null },
   reducers: {
-    setCredentials: (state, action) => {
-      const { user, token } = action.payload;
-      state.user = user;
-      state.token = token;
-      state.isAuthenticated = true;
-      localStorage.setItem('token', token);
-    },
-    logout: (state) => {
-      state.user = null;
-      state.token = null;
-      state.isAuthenticated = false;
-      localStorage.removeItem('token');
-    },
+    setPopup: (state, actions) => {
+      state.popup = actions.payload
+    }
   },
+  extraReducers: buider => {
+    buider
+      .addCase(signupUser.pending, (state) => state.status = 'loading')
+      .addCase(signupUser.fulfilled, (state, actions) => {
+        state.isAuthenticated = true;
+        state.status = 'success';
+        state.token = actions.payload.token;
+        state.user = actions.payload.user;
+      })
+      .addCase(signupUser.rejected, (state) => {
+        state.isAuthenticated = false;
+        state.status = 'fail';
+        state.token = null;
+        state.user = null;
+      })
+      .addCase(signoutUser.pending, (state) => state.status = 'loading')
+      .addCase(signoutUser.fulfilled, (state) => {
+        state.isAuthenticated = false;
+        state.status = 'success';
+        state.token = null;
+        state.user = null;
+      })
+      .addCase(signoutUser.rejected, (state) => state.status = 'fail')
+  }
 });
 
-export const { setCredentials, logout } = authSlice.actions;
 export default authSlice.reducer;
+export const {setPopup} = authSlice.actions;

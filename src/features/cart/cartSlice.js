@@ -22,7 +22,7 @@ const cartSlice = createSlice({
                     quantity: newItem.quantity || 1
                 });
             }
-        },
+        },  
         decrementQuantity: (state, action) => {
             const { id } = action.payload; // Just pass the ID
             const itemInCart = state.items.find((item) => item.id === id);

@@ -6,7 +6,6 @@ import AuthModal from '../components/AuthModal';
 import AuthInput from '../components/AuthInput';
 import { useSignInMutation, useSignUpMutation } from '../services/auth/authApi';
 import { useNavigate } from 'react-router-dom';
-import { ChevronLeft } from 'lucide-react';
 
 function ProtectedComponent({ children }) {
     const dispatch = useDispatch();
@@ -75,52 +74,34 @@ function ProtectedComponent({ children }) {
 
     return (
         <>
-            <button
-                onClick={() => navigate(-1)}
-                className="flex items-center text-gray-600 hover:text-primary transition-colors group"
+            <AuthModal
+                dialogRef={signInRef}
+                title="Sign In"
+                onClose={() => { toggleModal(signInRef, 'close') }}
+                switchModal={() => toggleModal(signUpRef, 'open')}
+                switchText="Don't have an account? Sign Up"
+                formSubmit={() => handleAuth('signin')}
+                formSubmitting={isLoggingIn}
+                formSumitError={isLogInError}
             >
-                <ChevronLeft className="w-5 h-5 mr-1 group-hover:-translate-x-1 transition-transform" />
-                Back
-            </button>
-            <div className="flex flex-col items-center justify-center min-h-[400px] bg-gray-50 rounded-xl border-2 border-dashed border-gray-200 m-4">
-                <h1 className="text-xl font-semibold text-gray-700 mb-4">This section is protected</h1>
-                <p className="text-gray-500 mb-6">Please sign in to view your data.</p>
-                <button
-                    onClick={() => toggleModal(signInRef, 'open')}
-                    className="btn-primary px-8 py-2"
-                >
-                    Sign In Now
-                </button>
+                <AuthInput type="email" placeholder="Email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+                <AuthInput type="password" placeholder="Password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+            </AuthModal>
 
-                <AuthModal
-                    dialogRef={signInRef}
-                    title="Sign In"
-                    onClose={() => { toggleModal(signInRef, 'close') }}
-                    switchModal={() => toggleModal(signUpRef, 'open')}
-                    switchText="Don't have an account? Sign Up"
-                    formSubmit={() => handleAuth('signin')}
-                    formSubmitting={isLoggingIn}
-                    formSumitError={isLogInError}
-                >
-                    <AuthInput type="email" placeholder="Email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-                    <AuthInput type="password" placeholder="Password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-                </AuthModal>
-
-                <AuthModal
-                    dialogRef={signUpRef}
-                    title="Create Account"
-                    onClose={() => toggleModal(signUpRef, 'close')}
-                    switchModal={() => toggleModal(signInRef, 'open')}
-                    switchText="Already have an account? Sign In"
-                    formSubmit={() => handleAuth('signup')}
-                    formSubmitting={isRegistering}
-                    formSumitError={isRegisterError}
-                >
-                    <AuthInput type="text" placeholder="Full Name" onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
-                    <AuthInput type="email" placeholder="Email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
-                    <AuthInput type="password" placeholder="Password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
-                </AuthModal>
-            </div>
+            <AuthModal
+                dialogRef={signUpRef}
+                title="Create Account"
+                onClose={() => toggleModal(signUpRef, 'close')}
+                switchModal={() => toggleModal(signInRef, 'open')}
+                switchText="Already have an account? Sign In"
+                formSubmit={() => handleAuth('signup')}
+                formSubmitting={isRegistering}
+                formSumitError={isRegisterError}
+            >
+                <AuthInput type="text" placeholder="Full Name" onChange={(e) => setFormData({ ...formData, name: e.target.value })} />
+                <AuthInput type="email" placeholder="Email" onChange={(e) => setFormData({ ...formData, email: e.target.value })} />
+                <AuthInput type="password" placeholder="Password" onChange={(e) => setFormData({ ...formData, password: e.target.value })} />
+            </AuthModal>
         </>
     );
 }

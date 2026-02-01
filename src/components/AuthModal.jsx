@@ -1,6 +1,9 @@
 import { X } from "lucide-react";
+import { useDispatch } from "react-redux";
+import { setPopup } from "../services/auth/authSlice";
 
-const AuthModal = ({ dialogRef, title, children, onClose, switchModal, switchText, formSubmit, formSubmitting, formSumitError }) => {
+const AuthModal = ({ dialogRef, title, children, onClose, switchModal, switchText, formSubmit }) => {
+    const dispatch = useDispatch()
 
     const handleSubmit = (e) => {
         e.preventDefault();
@@ -9,7 +12,7 @@ const AuthModal = ({ dialogRef, title, children, onClose, switchModal, switchTex
     return (
         <dialog
             ref={dialogRef}
-            onClick={(e) => e.target === dialogRef.current && onClose()}
+            onClick={(e) => {e.target === dialogRef.current && onClose(); dispatch(setPopup(null))}}
             className="rounded-2xl p-0 backdrop:backdrop-blur-[0.1px] shadow-2xl"
         >
             <div className="p-8 w-[90vw] max-w-md bg-white">
@@ -22,10 +25,10 @@ const AuthModal = ({ dialogRef, title, children, onClose, switchModal, switchTex
                     <button type="submit" className="btn-primary w-full py-3 mt-2">Continue</button>
                     <button
                         type="button"
-                        onClick={switchModal}
+                        onClick={() => {dialogRef.current.close(); switchModal()}}
                         className="text-sm text-gray-500 hover:text-primary transition-colors text-center mt-2"
                     >
-                        {!formSubmitting && !formSumitError ? switchText : formSubmitting ? "Submitting..." : "Error"}
+                        {switchText}
                     </button>
                 </form>
             </div>
